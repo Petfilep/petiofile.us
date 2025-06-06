@@ -71,11 +71,11 @@
           </li>
 
           <li class="navbar-item">
-            <a href="#" class="navbar-link" data-nav-link>Blogs</a>
+            <a href="Blog.html" class="navbar-link" data-nav-link>Blogs</a>
           </li>
 
           <li class="navbar-item">
-            <a href="#" class="navbar-link" data-nav-link>Contact</a>
+            <a href="contact.html" class="navbar-link" data-nav-link>Contact</a>
           </li>
 
         </ul>
@@ -89,9 +89,11 @@
           <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
         </button>
 
-        <button class="action-btn user" aria-label="User">
-          <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
-        </button>
+<!-- In your index.html -->
+<button class="action-btn user" aria-label="User" id="user-btn">
+  <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+  <span id="user-name"></span> <!-- To display the user's name if logged in -->
+</button>
 
         <button class="action-btn" aria-label="cart">
           <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>

@@ -1106,3 +1106,191 @@ body {
   .footer { padding-block-start: 40px; }
 
 }
+
+/* Contact Form Styling */
+.contact-form {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-form h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.contact-form .form-group {
+  margin-bottom: 20px;
+}
+
+.contact-form .form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.contact-form .form-group input,
+.contact-form .form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.contact-form .form-group textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.contact-form .form-group input:focus,
+.contact-form .form-group textarea:focus {
+  border-color: #ffa500;
+  outline: none;
+}
+
+.contact-form .form-group button {
+  background-color: #ffa500;
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1.2rem;
+  transition: background-color 0.3s;
+}
+
+.contact-form .form-group button:hover {
+  background-color: #ff6600;
+}
+
+.contact-form .form-group input[disabled],
+.contact-form .form-group textarea[disabled] {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* Blog Page Styling */
+.about-section {
+  background-color: #f9f9f9;
+  padding: 60px 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 60px;
+}
+
+.blog-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-title {
+  font-size: 3rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 15px;
+  font-family: 'Bangers', cursive;
+}
+
+.underline {
+  width: 100px; /* Adjusted width */
+  height: 5px;
+  background-color: #ffa500; /* Orange color */
+  margin: 0 auto;  /* Center the underline */
+  margin-top: 5px; /* Reduced this space to make it closer to the title */
+}
+
+.intro-text {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: #444;
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.sub-title {
+  font-size: 2.4rem;
+  color: #ffa500;
+  margin-bottom: 15px;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.mission-section, .values-section, .team-section, .commitment-section, .join-section {
+  margin-bottom: 30px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.values-section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.values-section ul li {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.team-section p, .commitment-section p, .join-section p {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+footer {
+  background-color: #444;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.4rem;
+  margin-top: 40px;
+  border-radius: 8px;
+}
+
+footer a {
+  color: #ffa500;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+
+/* Image Banner Section */
+.image-banner {
+  width: 100%;
+  text-align: center; /* Center the banner */
+  margin-top: 20px;  /* Adjust top margin */
+  padding-bottom: 0; /* Remove any bottom padding */
+}
+
+/* Banner Image Styling */
+.banner-img {
+  width: 90%;  /* Increase width to make the image bigger */
+  max-width: 800px;  /* Maximum width limit */
+  height: auto;  /* Let the height adjust automatically */
+  object-fit: cover; /* Ensures the image fills the space without distortion */
+  margin: 0 auto; /* Centers the image */
+  border-radius: 15px; /* Rounded corners for a smoother look */
+  display: block;  /* Ensures image is treated as a block element */
+  margin-bottom: 20px;  /* Added margin below for spacing */
+}
+
+
+
+

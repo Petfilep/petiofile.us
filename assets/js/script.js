@@ -60,4 +60,80 @@ const activeElemOnScroll = function () {
   }
 }
 
-addEventOnElem(window, "scroll", activeElemOnScroll);
+document.addEventListener('DOMContentLoaded', () => {
+  // Handle form submission
+  const form = document.querySelector('.contact-form form');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Grab form data
+    const name = form.querySelector('#name').value;
+    const email = form.querySelector('#email').value;
+    const message = form.querySelector('#message').value;
+    const orderNumber = form.querySelector('#orderNumber').value;
+    const product = form.querySelector('#product').value;
+
+    // Validate required fields
+    if (!name || !email || !message) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    // Prepare the data for submission (example for AJAX request)
+    const formData = {
+      name,
+      email,
+      message,
+      orderNumber: orderNumber || 'Not provided', // Optional field
+      product: product || 'Not provided' // Optional field
+    };
+
+    console.log('Form submitted:', formData);
+
+    // Example: Simulate successful submission
+    alert('Your message has been sent successfully!');
+    form.reset(); // Reset form after submission
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const cartButton = document.querySelector("[aria-label='cart']");
+  if (cartButton) {
+    cartButton.addEventListener("click", function () {
+      window.location.href = "/pages/cart.html";  // Redirect to cart page
+    });
+  }
+});
+
+//userbutton
+document.addEventListener("DOMContentLoaded", function () {
+  const userButton = document.getElementById("user-btn");
+  const userNameSpan = document.getElementById("user-name");
+
+  // Check if user is logged in
+  const userId = localStorage.getItem("user_id");
+  const userName = localStorage.getItem("user_name");
+
+  // If user is logged in, display their name and options
+  if (userId && userName) {
+    userNameSpan.textContent = userName;  // Display the logged-in user's name
+    userButton.addEventListener("click", function () {
+      // Show options when user clicks on their name
+      const isAccount = confirm(`Welcome, ${userName}! Do you want to view your account or sign out?`);
+
+      if (isAccount) {
+        window.location.href = "/pages/account.html";  // Redirect to account page (if you have one)
+      } else {
+        // Sign out the user
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("user_name");
+        window.location.href = "index.html";  // Redirect to home after sign-out
+      }
+    });
+  } else {
+    // If user is not logged in, redirect to the login page
+    userButton.addEventListener("click", function () {
+      window.location.href = "/pages/login.html";  // Redirect to login page if not logged in
+    });
+  }
+});

@@ -27,15 +27,18 @@
 <li class="navbar-item"><a class="navbar-link" data-nav-link="" href="/index.html#home">Home</a></li>
 <li class="navbar-item"><a class="navbar-link" data-nav-link="" href="/index.html#shop">Shop</a></li>
 <li class="navbar-item"><a class="navbar-link" data-nav-link="" href="#">Collections</a></li>
-<li class="navbar-item"><a class="navbar-link" data-nav-link="" href="#">Blogs</a></li>
-<li class="navbar-item"><a class="navbar-link" data-nav-link="" href="#">Contact</a></li>
+<li class="navbar-item"><a class="navbar-link" data-nav-link="" href="/Blog.html">Blogs</a></li>
+<li class="navbar-item"><a class="navbar-link" data-nav-link="" href="/contact.html">Contact</a></li>
 </ul>
 <a class="navbar-action-btn" href="#">Log In</a>
 </nav>
 <div class="header-actions">
 <button aria-label="Search" class="action-btn"><ion-icon name="search-outline"></ion-icon></button>
-<button aria-label="User" class="action-btn user"><ion-icon name="person-outline"></ion-icon></button>
-<button aria-label="cart" class="action-btn">
+<!-- In your index.html -->
+<button class="action-btn user" aria-label="User" id="user-btn">
+  <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+  <span id="user-name"></span> <!-- To display the user's name if logged in -->
+</button><button aria-label="cart" class="action-btn">
 <ion-icon name="bag-handle-outline"></ion-icon>
 <span class="btn-badge">0</span>
 </button>

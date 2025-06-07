@@ -1023,6 +1023,33 @@
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
+
+
+
+<script>
+const API = 'http://us3.bot-hosting.net:21136';
+const token = localStorage.getItem('jwt');
+
+if (token) {
+  fetch(`${API}/api/profile`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(user => {
+    document.getElementById('user-name').textContent = user.username;
+  })
+  .catch(() => {
+    localStorage.removeItem('jwt');
+    window.location.href = '/login.html';
+  });
+} else {
+  window.location.href = '/login.html';
+}
+</script>
+
+
+
+
 </body>
 
 </html>

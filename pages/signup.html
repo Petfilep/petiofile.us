@@ -160,4 +160,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-</script></body></html>
+</script>
+
+<script>
+const API = 'http://us3.bot-hosting.net:21136';
+
+document.querySelector('form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const username = this.username.value;
+  const email = this.email.value;
+  const password = this.password.value;
+  const confirm = this.confirm_password.value;
+
+  if (password !== confirm) return alert("Passwords do not match");
+
+  const res = await fetch(`${API}/api/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, email, password })
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    alert('✅ Account created. Please log in.');
+    window.location.href = '/login.html';
+  } else {
+    alert(data.message || 'Signup failed');
+  }
+});
+</script>
+
+</body></html>

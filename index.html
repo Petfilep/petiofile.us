@@ -1026,26 +1026,7 @@
 
 
 
-<script>
-const API = 'http://us3.bot-hosting.net:21136';
-const token = localStorage.getItem('jwt');
 
-if (token) {
-  fetch(`${API}/api/profile`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  .then(res => res.json())
-  .then(user => {
-    document.getElementById('user-name').textContent = user.username;
-  })
-  .catch(() => {
-    localStorage.removeItem('jwt');
-    window.location.href = '/pages/login.html';
-  });
-} else {
-  window.location.href = '/pages/login.html';
-}
-</script>
 
 
 

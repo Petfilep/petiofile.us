@@ -1,2 +1,2 @@
 // assets/js/api-config.js
-const API = 'http://us3.bot-hosting.net:21136';
+const API = 'https://petiofile-backend.onrender.com';

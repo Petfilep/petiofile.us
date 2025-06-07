@@ -172,6 +172,10 @@ document.querySelector('#signup-form').addEventListener('submit', async function
   const email = this.email.value;
   const password = this.password.value;
 
+  console.log("Sending signup to:", `${API}/api/signup`);
+
+
+
   const res = await fetch(`${API}/api/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -179,6 +183,10 @@ document.querySelector('#signup-form').addEventListener('submit', async function
   });
 
   const data = await res.json();
+
+  console.log("Response received:", data);
+
+
   if (res.ok) {
     alert('Signup successful! Please log in.');
     window.location.href = '/pages/login.html';

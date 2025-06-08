@@ -157,7 +157,7 @@ if (loginForm) {
 
     if (res.ok && data.token) {
       localStorage.setItem("jwt", data.token);
-      window.location.href = "index.html";
+      window.location.href = "/index.html";
     } else {
       alert(data.message || "Login failed");
     }

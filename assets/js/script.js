@@ -167,21 +167,27 @@ if (loginForm) {
 
 
 //Detect Logged-in User
-const token = localStorage.getItem("jwt");
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("jwt");
+  const userBtn = document.getElementById("user-btn");
+  const userName = document.getElementById("user-name");
 
-if (token) {
-  fetch(`${API}/api/profile`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  .then(res => res.json())
-  .then(user => {
-    document.getElementById("navbar-login").style.display = "none";
-    document.getElementById("navbar-profile").style.display = "inline-block";
-    document.getElementById("profile-name").textContent = user.username;
-  })
-  .catch(() => {
-    localStorage.removeItem("jwt");
-  });
-}
+  if (token && userBtn && userName) {
+    fetch(`${API}/api/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(user => {
+      userName.textContent = `Hi, ${user.username}`;
+      userBtn.onclick = () => window.location.href = "/pages/profile.html";
+    })
+    .catch(() => {
+      localStorage.removeItem("jwt");
+      userBtn.onclick = () => window.location.href = "/pages/login.html";
+    });
+  } else {
+    userBtn.onclick = () => window.location.href = "/pages/login.html";
+  }
+});
 
 

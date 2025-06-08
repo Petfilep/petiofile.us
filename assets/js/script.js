@@ -185,7 +185,3 @@ if (token) {
 }
 
 
-//auto-hide login/signup after login
-if (token) {
-  document.querySelectorAll('.hide-when-logged-in').forEach(el => el.style.display = 'none');
-}

@@ -163,3 +163,29 @@ if (loginForm) {
     }
   });
 }
+
+
+
+//Detect Logged-in User
+const token = localStorage.getItem("jwt");
+
+if (token) {
+  fetch(`${API}/api/profile`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(user => {
+    document.getElementById("navbar-login").style.display = "none";
+    document.getElementById("navbar-profile").style.display = "inline-block";
+    document.getElementById("profile-name").textContent = user.username;
+  })
+  .catch(() => {
+    localStorage.removeItem("jwt");
+  });
+}
+
+
+//auto-hide login/signup after login
+if (token) {
+  document.querySelectorAll('.hide-when-logged-in').forEach(el => el.style.display = 'none');
+}

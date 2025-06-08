@@ -137,3 +137,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+// login
+const loginForm = document.querySelector('#login-form');
+if (loginForm) {
+  loginForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const email = this.email.value;
+    const password = this.password.value;
+
+    const res = await fetch(`${API}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.token) {
+      localStorage.setItem("jwt", data.token);
+      window.location.href = "index.html";
+    } else {
+      alert(data.message || "Login failed");
+    }
+  });
+}

@@ -1301,6 +1301,12 @@ footer a:hover {
   color: inherit;
 }
 
+#user-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 
 
 

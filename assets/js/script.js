@@ -166,7 +166,7 @@ if (loginForm) {
 
 
 
-// ✅ FIXED: Petio Auth Script (Dropdown fully stabilized)
+// ✅ FIXED: Petio Auth Script (Dropdown and redirect separation)
 
 const token = localStorage.getItem("jwt");
 
@@ -190,25 +190,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout-btn");
   const dropdown = document.getElementById("user-dropdown");
 
-  // Always show user icon
+  let isLoggedIn = false;
+
   if (userWrapper) userWrapper.style.display = "inline-block";
 
-  // Toggle dropdown on click
   if (userBtn && dropdown) {
     userBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      toggleDropdown();
+      if (isLoggedIn) {
+        toggleDropdown();
+      } else {
+        window.location.href = "/pages/login.html";
+      }
     });
   }
 
-  // Hide dropdown if clicked outside
   document.addEventListener("click", (e) => {
     if (!userWrapper.contains(e.target)) {
       hideDropdown();
     }
   });
 
-  // Handle logout
   if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -217,7 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // If JWT is present, fetch user info and update UI
   if (token) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -227,25 +228,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return res.json();
       })
       .then(user => {
+        isLoggedIn = true;
         if (userName) userName.textContent = `Hi, ${user.username}`;
         if (dropdownUsername) dropdownUsername.textContent = user.username;
       })
       .catch(() => {
-        // Don't redirect immediately, just silently fail
         localStorage.removeItem("jwt");
       });
-  } else {
-    // Only redirect if user clicks (not auto)
-    if (userBtn && !dropdown) {
-      userBtn.addEventListener("click", () => {
-        window.location.href = "/pages/login.html";
-      });
-    }
   }
 });
-
-
-
-
-
-

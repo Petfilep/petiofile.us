@@ -224,10 +224,12 @@ document.addEventListener("DOMContentLoaded", () => {
         };
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      console.warn("Profile fetch failed", err);
       localStorage.removeItem("jwt");
-      userBtn.onclick = () => window.location.href = "/pages/login.html";
+      // Don't redirect immediately
     });
+
   } else if (userBtn) {
     userBtn.style.display = "inline-block";
     userBtn.onclick = () => window.location.href = "/pages/login.html";

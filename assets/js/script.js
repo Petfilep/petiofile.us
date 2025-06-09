@@ -165,8 +165,7 @@ if (loginForm) {
 }
 
 
-
-// ✅ FINAL FIX: Prevent double onclick redirect
+// ✅ FINAL FIX: Remove default button behavior completely
 
 const token = localStorage.getItem("jwt");
 
@@ -185,7 +184,7 @@ function hideDropdown() {
 document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("navbar-login");
   const profileWrapper = document.getElementById("user-menu-wrapper");
-  const userBtn = document.getElementById("user-btn");
+  let userBtn = document.getElementById("user-btn");
   const userName = document.getElementById("user-name");
   const dropdownUsername = document.getElementById("dropdown-username");
   const logoutBtn = document.getElementById("logout-btn");
@@ -197,9 +196,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (profileWrapper) profileWrapper.style.display = "inline-block";
   if (userName) userName.style.display = "none";
 
-  // REMOVE any hardcoded onclick redirect from HTML
-  if (userBtn) userBtn.removeAttribute("onclick");
+  // Completely replace userBtn to remove ALL listeners and attributes
+  if (userBtn) {
+    const clone = userBtn.cloneNode(true);
+    userBtn.parentNode.replaceChild(clone, userBtn);
+    userBtn = document.getElementById("user-btn");
+  }
 
+  // Set safe handler
   userBtn?.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();

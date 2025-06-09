@@ -167,103 +167,68 @@ if (loginForm) {
 
 
 //Detect Logged-in User
+const token = localStorage.getItem("jwt");
+
+function toggleDropdown() {
+  const dropdown = document.getElementById("user-dropdown");
+  if (dropdown) {
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  }
+}
+
+function hideDropdown() {
+  const dropdown = document.getElementById("user-dropdown");
+  if (dropdown) dropdown.style.display = "none";
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwt");
+  const userWrapper = document.getElementById("user-menu-wrapper");
   const userBtn = document.getElementById("user-btn");
   const userName = document.getElementById("user-name");
+  const dropdownUsername = document.getElementById("dropdown-username");
+  const logoutBtn = document.getElementById("logout-btn");
 
-if (token && userBtn && userName) {
-  fetch(`${API}/api/profile`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  .then(res => res.json())
-  .then(user => {
-    userName.textContent = `Hi, ${user.username}`;
+  if (userWrapper) userWrapper.style.display = "inline-block";
 
-    const dropdown = document.getElementById("user-dropdown");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    // ✅ Toggle dropdown instead of redirect
+  if (userBtn) {
     userBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isOpen = dropdown.style.display === "block";
-      dropdown.style.display = isOpen ? "none" : "block";
+      toggleDropdown();
     });
+  }
 
-    // ✅ Hide dropdown on outside click
-    document.addEventListener("click", () => {
-      dropdown.style.display = "none";
-    });
+  document.addEventListener("click", hideDropdown);
 
-    // ✅ Handle logout
+  if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();
       localStorage.removeItem("jwt");
       window.location.href = "/pages/login.html";
     });
-
-  })
-  .catch(() => {
-    localStorage.removeItem("jwt");
-    userBtn.onclick = () => window.location.href = "/pages/login.html";
-  });
-} else {
-  userBtn.onclick = () => window.location.href = "/pages/login.html";
-}
-});
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwt");
-  const userBtn = document.getElementById("user-btn");
-  const userName = document.getElementById("user-name");
-  const dropdown = document.getElementById("user-dropdown");
-  const dropdownUsername = document.getElementById("dropdown-username");
-  const logoutBtn = document.getElementById("logout-btn");
-
-  // Show dropdown on click, toggle visibility
-  if (userBtn && dropdown) {
-    userBtn.addEventListener("click", () => {
-      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-    });
   }
 
-  // Setup logout button
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("jwt");
-      window.location.href = "/pages/login.html";
-    });
-  }
-
-  // Fetch profile if logged in
   if (token) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        if (!res.ok) throw new Error();
+        if (!res.ok) throw new Error("Unauthorized");
         return res.json();
       })
       .then(user => {
-        userName.textContent = `Hi, ${user.username}`;
-        dropdownUsername.textContent = user.username;
-        document.querySelector(".user-menu-wrapper").style.display = "inline-block";
+        if (userName) userName.textContent = `Hi, ${user.username}`;
+        if (dropdownUsername) dropdownUsername.textContent = user.username;
       })
       .catch(() => {
         localStorage.removeItem("jwt");
-        window.location.href = "/pages/login.html";
       });
   } else {
-    document.querySelector(".user-menu-wrapper").style.display = "none";
-  }
-
-  // Hide dropdown when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!document.getElementById("user-menu-wrapper").contains(e.target)) {
-      dropdown.style.display = "none";
+    if (userBtn) {
+      userBtn.addEventListener("click", () => {
+        window.location.href = "/pages/login.html";
+      });
     }
-  });
+  }
 });
 
 

@@ -198,6 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (userName) userName.style.display = "none";
 
   userBtn?.addEventListener("click", (e) => {
+    e.preventDefault(); // 🛑 Prevent form submission
+    e.stopPropagation();
     e.stopPropagation();
     if (isLoggedIn) {
       toggleDropdown();

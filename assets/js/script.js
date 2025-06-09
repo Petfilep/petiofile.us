@@ -194,28 +194,30 @@ document.addEventListener("DOMContentLoaded", () => {
   let isLoggedIn = false;
 
   if (loginBtn) loginBtn.style.display = "inline-block";
-  if (profileWrapper) profileWrapper.style.display = "none";
+  if (profileWrapper) profileWrapper.style.display = "inline-block"; // Always show, hide name until logged in
+  if (userName) userName.style.display = "none";
 
-  // Default: redirect to login
-  userBtn?.addEventListener("click", () => {
-    window.location.href = "/pages/login.html";
+  userBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (isLoggedIn) {
+      toggleDropdown();
+    } else {
+      window.location.href = "/pages/login.html";
+    }
   });
 
-  // Hide dropdown when clicking outside
   document.addEventListener("click", (e) => {
     if (!profileWrapper?.contains(e.target)) {
       hideDropdown();
     }
   });
 
-  // Handle logout
   logoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
     localStorage.removeItem("jwt");
     window.location.href = "/pages/login.html";
   });
 
-  // If JWT token exists → try loading profile
   if (token) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -228,14 +230,11 @@ document.addEventListener("DOMContentLoaded", () => {
         isLoggedIn = true;
         if (loginBtn) loginBtn.style.display = "none";
         if (profileWrapper) profileWrapper.style.display = "inline-block";
-        if (userName) userName.textContent = `Hi, ${user.username}`;
+        if (userName) {
+          userName.textContent = `Hi, ${user.username}`;
+          userName.style.display = "inline";
+        }
         if (dropdownUsername) dropdownUsername.textContent = user.username;
-
-        // Only activate dropdown after login confirmed
-        userBtn.onclick = (e) => {
-          e.stopPropagation();
-          toggleDropdown();
-        };
       })
       .catch(() => {
         localStorage.removeItem("jwt");

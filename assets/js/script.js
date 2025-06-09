@@ -197,36 +197,42 @@ document.addEventListener("DOMContentLoaded", () => {
   const userName = document.getElementById("user-name");
   const dropdown = document.getElementById("user-dropdown");
   const dropdownUser = document.getElementById("dropdown-username");
+  const logoutBtn = document.getElementById("logout-btn");
 
-  if (token && userBtn && userName && dropdownUser && dropdown) {
+  if (token && userBtn && userName && dropdown && dropdownUser) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => res.json())
     .then(user => {
-      userName.textContent = "";
       dropdownUser.textContent = user.username;
+      userName.textContent = "👤";
       dropdown.style.display = "none";
 
-      userBtn.onclick = (e) => {
+      userBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-      };
+      });
 
       document.addEventListener("click", () => {
         dropdown.style.display = "none";
       });
+
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("jwt");
+        window.location.href = "/pages/login.html";
+      });
     })
     .catch(() => {
       localStorage.removeItem("jwt");
-      userBtn.onclick = () => window.location.href = "/pages/login.html";
     });
-  } else if (userBtn) {
-    userBtn.onclick = () => window.location.href = "/pages/login.html";
+  } else {
+    if (userBtn) {
+      userBtn.addEventListener("click", () => {
+        window.location.href = "/pages/login.html";
+      });
+    }
   }
 });
 
-function logout() {
-  localStorage.removeItem("jwt");
-  window.location.href = "/pages/login.html";
-}

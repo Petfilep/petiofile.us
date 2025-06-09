@@ -166,7 +166,7 @@ if (loginForm) {
 
 
 
-// ✅ CLEANED: Petio Auth Script (Stable, no duplicate redirects)
+// ✅ FINAL FIX: Swap Buttons After Login (No Merge Bug)
 
 const token = localStorage.getItem("jwt");
 
@@ -183,63 +183,62 @@ function hideDropdown() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwt");
-  const userWrapper = document.getElementById("user-menu-wrapper");
+  const loginBtn = document.getElementById("navbar-login");
+  const profileWrapper = document.getElementById("user-menu-wrapper");
   const userBtn = document.getElementById("user-btn");
   const userName = document.getElementById("user-name");
-  const dropdown = document.getElementById("user-dropdown");
   const dropdownUsername = document.getElementById("dropdown-username");
   const logoutBtn = document.getElementById("logout-btn");
+  const dropdown = document.getElementById("user-dropdown");
 
   let isLoggedIn = false;
 
-  // Always show icon wrapper
-  if (userWrapper) userWrapper.style.display = "inline-block";
+  if (loginBtn) loginBtn.style.display = "inline-block";
+  if (profileWrapper) profileWrapper.style.display = "none";
 
-  // Attach click handler (but redirect only if not logged in)
-  if (userBtn) {
-    userBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (isLoggedIn) {
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-      } else {
-        window.location.href = "/pages/login.html";
-      }
-    });
-  }
+  // Default: redirect to login
+  userBtn?.addEventListener("click", () => {
+    window.location.href = "/pages/login.html";
+  });
 
-  // Hide dropdown on outside click
+  // Hide dropdown when clicking outside
   document.addEventListener("click", (e) => {
-    if (dropdown && !userWrapper.contains(e.target)) {
-      dropdown.style.display = "none";
+    if (!profileWrapper?.contains(e.target)) {
+      hideDropdown();
     }
   });
 
-  // Logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("jwt");
-      window.location.href = "/pages/login.html";
-    });
-  }
+  // Handle logout
+  logoutBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.removeItem("jwt");
+    window.location.href = "/pages/login.html";
+  });
 
-  // Fetch user info if token exists
+  // If JWT token exists → try loading profile
   if (token) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => {
-      if (!res.ok) throw new Error("Unauthorized");
-      return res.json();
-    })
-    .then(user => {
-      isLoggedIn = true;
-      if (userName) userName.textContent = `Hi, ${user.username}`;
-      if (dropdownUsername) dropdownUsername.textContent = user.username;
-    })
-    .catch(() => {
-      localStorage.removeItem("jwt");
-    });
+      .then(res => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then(user => {
+        isLoggedIn = true;
+        if (loginBtn) loginBtn.style.display = "none";
+        if (profileWrapper) profileWrapper.style.display = "inline-block";
+        if (userName) userName.textContent = `Hi, ${user.username}`;
+        if (dropdownUsername) dropdownUsername.textContent = user.username;
+
+        // Only activate dropdown after login confirmed
+        userBtn.onclick = (e) => {
+          e.stopPropagation();
+          toggleDropdown();
+        };
+      })
+      .catch(() => {
+        localStorage.removeItem("jwt");
+      });
   }
 });

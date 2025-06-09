@@ -187,49 +187,48 @@ document.addEventListener("DOMContentLoaded", () => {
   const userName = document.getElementById("user-name");
   const dropdownUsername = document.getElementById("dropdown-username");
   const logoutBtn = document.getElementById("logout-btn");
+  const dropdown = document.getElementById("user-dropdown");
 
+  // Show the wrapper always
   if (userWrapper) userWrapper.style.display = "inline-block";
 
-  if (userBtn) {
-    userBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggleDropdown();
-    });
-  }
-
-  document.addEventListener("click", hideDropdown);
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("jwt");
-      window.location.href = "/pages/login.html";
-    });
-  }
-
+  // Load username from token
+  const token = localStorage.getItem("jwt");
   if (token) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
-      })
-      .then(user => {
-        if (userName) userName.textContent = `Hi, ${user.username}`;
-        if (dropdownUsername) dropdownUsername.textContent = user.username;
-      })
-      .catch(() => {
-        localStorage.removeItem("jwt");
-      });
-  } else {
-    if (userBtn) {
-      userBtn.addEventListener("click", () => {
-        window.location.href = "/pages/login.html";
-      });
-    }
+    .then(res => {
+      if (!res.ok) throw new Error("Unauthorized");
+      return res.json();
+    })
+    .then(user => {
+      if (userName) userName.textContent = `Hi, ${user.username}`;
+      if (dropdownUsername) dropdownUsername.textContent = user.username;
+    })
+    .catch(() => {
+      localStorage.removeItem("jwt");
+    });
   }
+
+  // Toggle dropdown
+  userBtn?.addEventListener("click", e => {
+    e.stopPropagation();
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  });
+
+  document.addEventListener("click", () => {
+    dropdown.style.display = "none";
+  });
+
+  // Logout
+  logoutBtn?.addEventListener("click", e => {
+    e.preventDefault();
+    localStorage.removeItem("jwt");
+    window.location.href = "/pages/login.html";
+  });
 });
+
 
 
 

@@ -1303,10 +1303,7 @@ footer a:hover {
 
 
 
-.user-menu-wrapper {
-  position: relative;
-  display: inline-block;
-}
+
 
 .user-dropdown {
   display: none;
@@ -1314,24 +1311,27 @@ footer a:hover {
   right: 0;
   top: 100%;
   background: white;
-  color: black;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   border-radius: 6px;
   z-index: 999;
-  width: 150px;
+  min-width: 160px;
 }
 
 .user-dropdown a {
   display: block;
-  padding: 6px 0;
-  color: #333;
+  padding: 8px 12px;
   text-decoration: none;
-  font-size: 14px;
+  color: #333;
 }
 
 .user-dropdown a:hover {
-  color: #007BFF;
+  background: #f0f0f0;
+}
+
+.user-menu-wrapper {
+  position: relative;
 }
 
 .greeting {

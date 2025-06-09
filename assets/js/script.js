@@ -236,19 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .then(user => {
         isLoggedIn = true;
-        if (loginBtn) {
-          loginBtn.style.display = "none";
-          loginBtn.style.visibility = "hidden";
-          loginBtn.style.height = "0";
-          loginBtn.style.padding = "0";
-          loginBtn.style.margin = "0";
-          loginBtn.style.overflow = "hidden";
-          loginBtn.style.position = "absolute";
-          loginBtn.style.pointerEvents = "none";
-          loginBtn.removeAttribute("href");
-          loginBtn.classList.add("disabled");
-        }
-
+        if (loginBtn) loginBtn.style.display = "none";
         if (profileWrapper) profileWrapper.style.display = "inline-block";
         if (userName) {
           userName.textContent = `Hi, ${user.username}`;

@@ -1347,9 +1347,3 @@ footer a:hover {
   border-bottom: 1px solid #ddd;
   padding-bottom: 4px;
 }
-
-
-.navbar-action-btn.disabled {
-  pointer-events: none;
-  opacity: 0;
-}

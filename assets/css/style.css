@@ -1300,3 +1300,43 @@ footer a:hover {
   font-size: 14px;
   color: inherit;
 }
+
+
+.user-menu-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.user-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  color: black;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  z-index: 999;
+  width: 150px;
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 6px 0;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.user-dropdown a:hover {
+  color: #007BFF;
+}
+
+.greeting {
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+}

@@ -192,24 +192,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let isLoggedIn = false;
 
+  // Apply layout styles
   if (userWrapper) userWrapper.style.display = "inline-flex";
   if (userBtn) userBtn.style.display = "flex";
-
-  const icon = userBtn.querySelector("ion-icon");
+  const icon = userBtn?.querySelector("ion-icon");
   if (icon) icon.style.marginRight = "6px";
 
-  // Do not attach multiple listeners to the same button
-  if (userBtn && dropdown) {
-    userBtn.onclick = null;
-    userBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (isLoggedIn) {
-        toggleDropdown();
-      } else {
-        window.location.href = "/pages/login.html";
-      }
-    });
-  }
+  // Always clear existing click listeners
+  if (userBtn) userBtn.replaceWith(userBtn.cloneNode(true));
+  const fixedUserBtn = document.getElementById("user-btn");
+
+  fixedUserBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (isLoggedIn) {
+      toggleDropdown();
+    } else {
+      window.location.href = "/pages/login.html";
+    }
+  });
 
   document.addEventListener("click", (e) => {
     if (!userWrapper.contains(e.target)) {
@@ -217,24 +217,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  if (logoutBtn) {
-    logoutBtn.onclick = null;
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("jwt");
-      window.location.href = "/pages/login.html";
-    });
-  }
+  logoutBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.removeItem("jwt");
+    window.location.href = "/pages/login.html";
+  });
+
+  const token = localStorage.getItem("jwt");
 
   if (token) {
     fetch(`${API}/api/profile`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error("Unauthorized");
         return res.json();
       })
-      .then(user => {
+      .then((user) => {
         isLoggedIn = true;
         if (userName) userName.textContent = `Hi, ${user.username}`;
         if (dropdownUsername) dropdownUsername.textContent = user.username;
@@ -244,4 +243,3 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
-

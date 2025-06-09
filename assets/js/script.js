@@ -194,44 +194,44 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("jwt");
   const userBtn = document.getElementById("user-btn");
-  const userName = document.getElementById("user-name");
-  const dropdown = document.getElementById("user-dropdown");
-  const dropdownUser = document.getElementById("dropdown-username");
-  const logoutBtn = document.getElementById("logout-btn");
+  const userDropdown = document.getElementById("user-dropdown");
+  const dropdownUsername = document.getElementById("dropdown-username");
 
-  if (token && userBtn && userName && dropdown && dropdownUser) {
+  if (token && userBtn && userDropdown && dropdownUsername) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => res.json())
     .then(user => {
-      dropdownUser.textContent = user.username;
-      dropdown.style.display = "none";
+      dropdownUsername.textContent = user.username;
 
-      userBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      // Show the icon + dropdown
+      userBtn.style.display = "inline-block";
+      userDropdown.style.display = "none"; // still hidden until hover
+
+      // Optional: Add click toggle instead of hover
+      userBtn.addEventListener("click", () => {
+        userDropdown.style.display =
+          userDropdown.style.display === "block" ? "none" : "block";
       });
 
-      document.addEventListener("click", () => {
-        dropdown.style.display = "none";
-      });
-
-      logoutBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        localStorage.removeItem("jwt");
-        window.location.href = "/pages/login.html";
-      });
+      // Logout
+      const logoutBtn = document.getElementById("logout-btn");
+      if (logoutBtn) {
+        logoutBtn.onclick = () => {
+          localStorage.removeItem("jwt");
+          window.location.href = "/pages/login.html";
+        };
+      }
     })
     .catch(() => {
       localStorage.removeItem("jwt");
+      userBtn.onclick = () => window.location.href = "/pages/login.html";
     });
-  } else {
-    if (userBtn) {
-      userBtn.addEventListener("click", () => {
-        window.location.href = "/pages/login.html";
-      });
-    }
+  } else if (userBtn) {
+    userBtn.style.display = "inline-block";
+    userBtn.onclick = () => window.location.href = "/pages/login.html";
   }
 });
+
 

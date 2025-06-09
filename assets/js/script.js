@@ -183,63 +183,63 @@ function hideDropdown() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("jwt");
   const userWrapper = document.getElementById("user-menu-wrapper");
   const userBtn = document.getElementById("user-btn");
   const userName = document.getElementById("user-name");
+  const dropdown = document.getElementById("user-dropdown");
   const dropdownUsername = document.getElementById("dropdown-username");
   const logoutBtn = document.getElementById("logout-btn");
-  const dropdown = document.getElementById("user-dropdown");
 
   let isLoggedIn = false;
 
-  // Apply layout styles
-  if (userWrapper) userWrapper.style.display = "inline-flex";
-  if (userBtn) userBtn.style.display = "flex";
-  const icon = userBtn?.querySelector("ion-icon");
-  if (icon) icon.style.marginRight = "6px";
+  // Always show icon wrapper
+  if (userWrapper) userWrapper.style.display = "inline-block";
 
-  // Always clear existing click listeners
-  if (userBtn) userBtn.replaceWith(userBtn.cloneNode(true));
-  const fixedUserBtn = document.getElementById("user-btn");
+  // Attach click handler (but redirect only if not logged in)
+  if (userBtn) {
+    userBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isLoggedIn) {
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      } else {
+        window.location.href = "/pages/login.html";
+      }
+    });
+  }
 
-  fixedUserBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (isLoggedIn) {
-      toggleDropdown();
-    } else {
-      window.location.href = "/pages/login.html";
-    }
-  });
-
+  // Hide dropdown on outside click
   document.addEventListener("click", (e) => {
-    if (!userWrapper.contains(e.target)) {
-      hideDropdown();
+    if (dropdown && !userWrapper.contains(e.target)) {
+      dropdown.style.display = "none";
     }
   });
 
-  logoutBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    localStorage.removeItem("jwt");
-    window.location.href = "/pages/login.html";
-  });
+  // Logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("jwt");
+      window.location.href = "/pages/login.html";
+    });
+  }
 
-  const token = localStorage.getItem("jwt");
-
+  // Fetch user info if token exists
   if (token) {
     fetch(`${API}/api/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
-      })
-      .then((user) => {
-        isLoggedIn = true;
-        if (userName) userName.textContent = `Hi, ${user.username}`;
-        if (dropdownUsername) dropdownUsername.textContent = user.username;
-      })
-      .catch(() => {
-        localStorage.removeItem("jwt");
-      });
+    .then(res => {
+      if (!res.ok) throw new Error("Unauthorized");
+      return res.json();
+    })
+    .then(user => {
+      isLoggedIn = true;
+      if (userName) userName.textContent = `Hi, ${user.username}`;
+      if (dropdownUsername) dropdownUsername.textContent = user.username;
+    })
+    .catch(() => {
+      localStorage.removeItem("jwt");
+    });
   }
 });

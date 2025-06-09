@@ -92,13 +92,12 @@
 <!-- In your index.html -->
 <div class="user-menu-wrapper" id="user-menu-wrapper">
   <button class="action-btn user" aria-label="User" id="user-btn">
-    <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
-    <span id="user-name"></span>
+    <span id="user-name">👤</span>
   </button>
   <div class="user-dropdown" id="user-dropdown">
     <p class="greeting">Hi, <span id="dropdown-username"></span></p>
     <a href="/pages/profile.html">👤 Profile</a>
-    <a href="#" onclick="logout()">🚪 Logout</a>
+    <a href="#" id="logout-btn">🚪 Logout</a>
   </div>
 </div>
 

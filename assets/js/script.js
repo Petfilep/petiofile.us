@@ -166,7 +166,7 @@ if (loginForm) {
 
 
 
-// ✅ FIXED: Petio Auth Script (Dropdown and redirect separation)
+// ✅ CLEANED: Petio Auth Script (Stable, no duplicate redirects)
 
 const token = localStorage.getItem("jwt");
 
@@ -193,15 +193,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let isLoggedIn = false;
 
   if (userWrapper) userWrapper.style.display = "inline-flex";
-
-  // make name and icon horizontal
   if (userBtn) userBtn.style.display = "flex";
 
-  // Fix icon and name alignment
   const icon = userBtn.querySelector("ion-icon");
   if (icon) icon.style.marginRight = "6px";
 
+  // Do not attach multiple listeners to the same button
   if (userBtn && dropdown) {
+    userBtn.onclick = null;
     userBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       if (isLoggedIn) {
@@ -219,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (logoutBtn) {
+    logoutBtn.onclick = null;
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();
       localStorage.removeItem("jwt");
@@ -244,3 +244,4 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
+

@@ -206,7 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(user => {
       dropdownUser.textContent = user.username;
-      userName.textContent = "👤";
       dropdown.style.display = "none";
 
       userBtn.addEventListener("click", (e) => {

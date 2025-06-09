@@ -216,52 +216,67 @@ if (token && userBtn && userName) {
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("jwt");
 
-  if (!token) return; // not logged in, don't run anything
+  if (!token) return;
 
   fetch(`${API}/api/profile`, {
     headers: { Authorization: `Bearer ${token}` }
   })
     .then(res => {
-      if (!res.ok) throw new Error("Unauthorized");
+      if (!res.ok) {
+        console.warn("Invalid token or session expired");
+        return null;
+      }
       return res.json();
     })
     .then(user => {
+      if (!user) return;
+
       const userBtn = document.getElementById("user-btn");
       const userName = document.getElementById("user-name");
       const userDropdown = document.getElementById("user-dropdown");
       const dropdownUsername = document.getElementById("dropdown-username");
       const logoutBtn = document.getElementById("logout-btn");
 
+      // Basic protection
       if (!userBtn || !userName) return;
 
+      // Show "Hi"
       userName.textContent = "Hi";
+
+      // Optional dropdown support
       if (dropdownUsername) dropdownUsername.textContent = user.username;
 
       if (userDropdown && logoutBtn) {
         userDropdown.style.display = "none";
 
-        userBtn.onclick = (e) => {
+        userBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          userDropdown.style.display =
-            userDropdown.style.display === "block" ? "none" : "block";
-        };
+          const isOpen = userDropdown.style.display === "block";
+          userDropdown.style.display = isOpen ? "none" : "block";
+        });
 
         document.addEventListener("click", () => {
           userDropdown.style.display = "none";
         });
 
-        logoutBtn.onclick = (e) => {
+        logoutBtn.addEventListener("click", (e) => {
           e.preventDefault();
           localStorage.removeItem("jwt");
           window.location.href = "/pages/login.html";
-        };
+        });
+      } else {
+        // If no dropdown, redirect manually on click
+        userBtn.addEventListener("click", () => {
+          window.location.href = "/pages/profile.html";
+        });
       }
     })
-    .catch(() => {
-      // do NOT remove token immediately — just warn
-      console.warn("JWT invalid or profile fetch failed");
+    .catch(err => {
+      console.warn("Token fetch failed", err);
+      // Don't redirect or clear token — let it stay for debugging
     });
 });
+
 
 
 

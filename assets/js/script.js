@@ -172,22 +172,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const userBtn = document.getElementById("user-btn");
   const userName = document.getElementById("user-name");
 
-  if (token && userBtn && userName) {
-    fetch(`${API}/api/profile`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => res.json())
-    .then(user => {
-      userName.textContent = `Hi, ${user.username}`;
-      userBtn.onclick = () => window.location.href = "/pages/profile.html";
-    })
-    .catch(() => {
-      localStorage.removeItem("jwt");
-      userBtn.onclick = () => window.location.href = "/pages/login.html";
+if (token && userBtn && userName) {
+  fetch(`${API}/api/profile`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(user => {
+    userName.textContent = `Hi, ${user.username}`;
+
+    const dropdown = document.getElementById("user-dropdown");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    // ✅ Toggle dropdown instead of redirect
+    userBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.style.display === "block";
+      dropdown.style.display = isOpen ? "none" : "block";
     });
-  } else {
+
+    // ✅ Hide dropdown on outside click
+    document.addEventListener("click", () => {
+      dropdown.style.display = "none";
+    });
+
+    // ✅ Handle logout
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("jwt");
+      window.location.href = "/pages/login.html";
+    });
+
+  })
+  .catch(() => {
+    localStorage.removeItem("jwt");
     userBtn.onclick = () => window.location.href = "/pages/login.html";
-  }
+  });
+} else {
+  userBtn.onclick = () => window.location.href = "/pages/login.html";
+}
 });
 
 

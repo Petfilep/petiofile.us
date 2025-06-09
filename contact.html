@@ -35,10 +35,18 @@
 <div class="header-actions">
 <button aria-label="Search" class="action-btn"><ion-icon name="search-outline"></ion-icon></button>
 <!-- In your index.html -->
-<button class="action-btn user" aria-label="User" id="user-btn">
-  <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
-  <span id="user-name"></span> <!-- To display the user's name if logged in -->
-</button>
+<div class="user-menu-wrapper" id="user-menu-wrapper">
+  <button class="action-btn user" aria-label="User" id="user-btn">
+    <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+    <span id="user-name"></span>
+  </button>
+  <div class="user-dropdown" id="user-dropdown">
+    <p class="greeting">Hi, <span id="dropdown-username"></span></p>
+    <a href="/pages/profile.html">👤 Profile</a>
+    <a href="#" onclick="logout()">🚪 Logout</a>
+  </div>
+</div>
+
 
 <button aria-label="cart" class="action-btn">
 <ion-icon name="bag-handle-outline"></ion-icon>

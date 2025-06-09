@@ -196,44 +196,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const userBtn = document.getElementById("user-btn");
   const userDropdown = document.getElementById("user-dropdown");
   const dropdownUsername = document.getElementById("dropdown-username");
+  const userName = document.getElementById("user-name");
+  const logoutBtn = document.getElementById("logout-btn");
 
-  if (token && userBtn && userDropdown && dropdownUsername) {
+  if (token && userBtn && userDropdown && dropdownUsername && userName) {
     fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => res.json())
     .then(user => {
+      userName.textContent = "Hi";
       dropdownUsername.textContent = user.username;
 
-      // Show the icon + dropdown
-      userBtn.style.display = "inline-block";
-      userDropdown.style.display = "none"; // still hidden until hover
+      userDropdown.style.display = "none";
 
-      // Optional: Add click toggle instead of hover
-      userBtn.addEventListener("click", () => {
+      userBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
         userDropdown.style.display =
           userDropdown.style.display === "block" ? "none" : "block";
       });
 
-      // Logout
-      const logoutBtn = document.getElementById("logout-btn");
-      if (logoutBtn) {
-        logoutBtn.onclick = () => {
-          localStorage.removeItem("jwt");
-          window.location.href = "/pages/login.html";
-        };
-      }
-    })
-    .catch((err) => {
-      console.warn("Profile fetch failed", err);
-      localStorage.removeItem("jwt");
-      // Don't redirect immediately
-    });
+      document.addEventListener("click", () => {
+        userDropdown.style.display = "none";
+      });
 
-  } else if (userBtn) {
-    userBtn.style.display = "inline-block";
-    userBtn.onclick = () => window.location.href = "/pages/login.html";
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("jwt");
+        window.location.href = "/pages/login.html";
+      });
+    });
   }
 });
+
 
 

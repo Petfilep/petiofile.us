@@ -215,68 +215,56 @@ if (token && userBtn && userName) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("jwt");
+  const userBtn = document.getElementById("user-btn");
+  const userName = document.getElementById("user-name");
+  const dropdown = document.getElementById("user-dropdown");
+  const dropdownUsername = document.getElementById("dropdown-username");
+  const logoutBtn = document.getElementById("logout-btn");
 
-  if (!token) return;
-
-  fetch(`${API}/api/profile`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-    .then(res => {
-      if (!res.ok) {
-        console.warn("Invalid token or session expired");
-        return null;
-      }
-      return res.json();
-    })
-    .then(user => {
-      if (!user) return;
-
-      const userBtn = document.getElementById("user-btn");
-      const userName = document.getElementById("user-name");
-      const userDropdown = document.getElementById("user-dropdown");
-      const dropdownUsername = document.getElementById("dropdown-username");
-      const logoutBtn = document.getElementById("logout-btn");
-
-      // Basic protection
-      if (!userBtn || !userName) return;
-
-      // Show "Hi"
-      userName.textContent = "Hi";
-
-      // Optional dropdown support
-      if (dropdownUsername) dropdownUsername.textContent = user.username;
-
-      if (userDropdown && logoutBtn) {
-        userDropdown.style.display = "none";
-
-        userBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const isOpen = userDropdown.style.display === "block";
-          userDropdown.style.display = isOpen ? "none" : "block";
-        });
-
-        document.addEventListener("click", () => {
-          userDropdown.style.display = "none";
-        });
-
-        logoutBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          localStorage.removeItem("jwt");
-          window.location.href = "/pages/login.html";
-        });
-      } else {
-        // If no dropdown, redirect manually on click
-        userBtn.addEventListener("click", () => {
-          window.location.href = "/pages/profile.html";
-        });
-      }
-    })
-    .catch(err => {
-      console.warn("Token fetch failed", err);
-      // Don't redirect or clear token — let it stay for debugging
+  // Show dropdown on click, toggle visibility
+  if (userBtn && dropdown) {
+    userBtn.addEventListener("click", () => {
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     });
-});
+  }
 
+  // Setup logout button
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("jwt");
+      window.location.href = "/pages/login.html";
+    });
+  }
+
+  // Fetch profile if logged in
+  if (token) {
+    fetch(`${API}/api/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(user => {
+        userName.textContent = `Hi, ${user.username}`;
+        dropdownUsername.textContent = user.username;
+        document.querySelector(".user-menu-wrapper").style.display = "inline-block";
+      })
+      .catch(() => {
+        localStorage.removeItem("jwt");
+        window.location.href = "/pages/login.html";
+      });
+  } else {
+    document.querySelector(".user-menu-wrapper").style.display = "none";
+  }
+
+  // Hide dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!document.getElementById("user-menu-wrapper").contains(e.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+});
 
 
 

@@ -192,7 +192,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let isLoggedIn = false;
 
-  if (userWrapper) userWrapper.style.display = "inline-block";
+  if (userWrapper) userWrapper.style.display = "inline-flex";
+
+  // make name and icon horizontal
+  if (userBtn) userBtn.style.display = "flex";
+
+  // Fix icon and name alignment
+  const icon = userBtn.querySelector("ion-icon");
+  if (icon) icon.style.marginRight = "6px";
 
   if (userBtn && dropdown) {
     userBtn.addEventListener("click", (e) => {

@@ -166,7 +166,7 @@ if (loginForm) {
 
 
 
-// ✅ FINAL FIX: Swap Buttons After Login (No Merge Bug)
+// ✅ FINAL FIX: Prevent double onclick redirect
 
 const token = localStorage.getItem("jwt");
 
@@ -194,12 +194,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let isLoggedIn = false;
 
   if (loginBtn) loginBtn.style.display = "inline-block";
-  if (profileWrapper) profileWrapper.style.display = "inline-block"; // Always show, hide name until logged in
+  if (profileWrapper) profileWrapper.style.display = "inline-block";
   if (userName) userName.style.display = "none";
 
+  // REMOVE any hardcoded onclick redirect from HTML
+  if (userBtn) userBtn.removeAttribute("onclick");
+
   userBtn?.addEventListener("click", (e) => {
-    e.preventDefault(); // 🛑 Prevent form submission
-    e.stopPropagation();
+    e.preventDefault();
     e.stopPropagation();
     if (isLoggedIn) {
       toggleDropdown();

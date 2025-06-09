@@ -236,7 +236,12 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .then(user => {
         isLoggedIn = true;
-        if (loginBtn) loginBtn.style.display = "none";
+        if (loginBtn) {
+          loginBtn.style.display = "none";
+          loginBtn.removeAttribute("href");
+          loginBtn.classList.add("disabled");
+        }
+
         if (profileWrapper) profileWrapper.style.display = "inline-block";
         if (userName) {
           userName.textContent = `Hi, ${user.username}`;

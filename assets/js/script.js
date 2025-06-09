@@ -221,34 +221,46 @@ document.addEventListener("DOMContentLoaded", () => {
   const userName = document.getElementById("user-name");
   const logoutBtn = document.getElementById("logout-btn");
 
-  if (token && userBtn && userDropdown && dropdownUsername && userName) {
-    fetch(`${API}/api/profile`, {
-      headers: { Authorization: `Bearer ${token}` }
+  if (!token || !userBtn || !userName || !userDropdown || !logoutBtn || !dropdownUsername) return;
+
+  // Only fetch profile if token exists
+  fetch(`${API}/api/profile`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Invalid token");
+      return res.json();
     })
-    .then(res => res.json())
     .then(user => {
       userName.textContent = "Hi";
       dropdownUsername.textContent = user.username;
 
+      // Default dropdown hidden
       userDropdown.style.display = "none";
 
+      // Toggle dropdown
       userBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        userDropdown.style.display =
-          userDropdown.style.display === "block" ? "none" : "block";
+        const isOpen = userDropdown.style.display === "block";
+        userDropdown.style.display = isOpen ? "none" : "block";
       });
 
+      // Outside click closes dropdown
       document.addEventListener("click", () => {
         userDropdown.style.display = "none";
       });
 
+      // Logout button
       logoutBtn.addEventListener("click", (e) => {
         e.preventDefault();
         localStorage.removeItem("jwt");
         window.location.href = "/pages/login.html";
       });
+    })
+    .catch(() => {
+      localStorage.removeItem("jwt");
+      userBtn.onclick = () => window.location.href = "/pages/login.html";
     });
-  }
 });
 
 

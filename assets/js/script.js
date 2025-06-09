@@ -215,53 +215,54 @@ if (token && userBtn && userName) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("jwt");
-  const userBtn = document.getElementById("user-btn");
-  const userDropdown = document.getElementById("user-dropdown");
-  const dropdownUsername = document.getElementById("dropdown-username");
-  const userName = document.getElementById("user-name");
-  const logoutBtn = document.getElementById("logout-btn");
 
-  if (!token || !userBtn || !userName || !userDropdown || !logoutBtn || !dropdownUsername) return;
+  if (!token) return; // not logged in, don't run anything
 
-  // Only fetch profile if token exists
   fetch(`${API}/api/profile`, {
     headers: { Authorization: `Bearer ${token}` }
   })
     .then(res => {
-      if (!res.ok) throw new Error("Invalid token");
+      if (!res.ok) throw new Error("Unauthorized");
       return res.json();
     })
     .then(user => {
+      const userBtn = document.getElementById("user-btn");
+      const userName = document.getElementById("user-name");
+      const userDropdown = document.getElementById("user-dropdown");
+      const dropdownUsername = document.getElementById("dropdown-username");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      if (!userBtn || !userName) return;
+
       userName.textContent = "Hi";
-      dropdownUsername.textContent = user.username;
+      if (dropdownUsername) dropdownUsername.textContent = user.username;
 
-      // Default dropdown hidden
-      userDropdown.style.display = "none";
-
-      // Toggle dropdown
-      userBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isOpen = userDropdown.style.display === "block";
-        userDropdown.style.display = isOpen ? "none" : "block";
-      });
-
-      // Outside click closes dropdown
-      document.addEventListener("click", () => {
+      if (userDropdown && logoutBtn) {
         userDropdown.style.display = "none";
-      });
 
-      // Logout button
-      logoutBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        localStorage.removeItem("jwt");
-        window.location.href = "/pages/login.html";
-      });
+        userBtn.onclick = (e) => {
+          e.stopPropagation();
+          userDropdown.style.display =
+            userDropdown.style.display === "block" ? "none" : "block";
+        };
+
+        document.addEventListener("click", () => {
+          userDropdown.style.display = "none";
+        });
+
+        logoutBtn.onclick = (e) => {
+          e.preventDefault();
+          localStorage.removeItem("jwt");
+          window.location.href = "/pages/login.html";
+        };
+      }
     })
     .catch(() => {
-      localStorage.removeItem("jwt");
-      userBtn.onclick = () => window.location.href = "/pages/login.html";
+      // do NOT remove token immediately — just warn
+      console.warn("JWT invalid or profile fetch failed");
     });
 });
+
 
 
 

@@ -1299,10 +1299,7 @@ footer a:hover {
   font-weight: 500;
   font-size: 14px;
   color: inherit;
-  display: inline !important;
-  visibility: visible !important;
 }
-
 
 #user-btn {
   display: flex;

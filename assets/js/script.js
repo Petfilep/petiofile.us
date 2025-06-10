@@ -239,10 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (loginBtn) loginBtn.style.display = "none";
         if (profileWrapper) profileWrapper.style.display = "inline-block";
         if (userName) {
-  userName.textContent = `Hi, ${user.username}`;
-  userName.style.display = "inline";
-  userName.style.visibility = "visible";
-}
+          userName.textContent = `Hi, ${user.username}`;
+          userName.style.display = "inline";
+        }
         if (dropdownUsername) dropdownUsername.textContent = user.username;
       })
       .catch(() => {

@@ -208,20 +208,29 @@
     const currencySelector = document.getElementById('currency-selector');
     let currency = currencySelector.value;
 
+    const conversionRates = {
+      NPR: 1,
+      USD: 0.0075,
+      EGP: 0.36,
+      INR: 0.62
+    };
+
     function renderCart() {
       tbody.innerHTML = '';
       let total = 0;
 
       cart.forEach((item, i) => {
-        const row = document.createElement('tr');
+        const priceInSelectedCurrency = (item.price * conversionRates[currency]).toFixed(2);
+        const itemTotal = (item.qty * priceInSelectedCurrency).toFixed(2);
 
+        const row = document.createElement('tr');
         row.innerHTML = `
           <td>
             <div class="product-info">
               <img src="${item.image}" alt="${item.title}" />
               <div>
                 <div><strong>${item.title}</strong></div>
-                <div>${currency} ${item.price}</div>
+                <div>${currency} ${priceInSelectedCurrency}</div>
               </div>
             </div>
           </td>
@@ -233,11 +242,11 @@
               <button class="delete-btn" onclick="removeItem(${i})">🗑️</button>
             </div>
           </td>
-          <td>${currency} ${(item.qty * item.price).toFixed(2)}</td>
+          <td>${currency} ${itemTotal}</td>
         `;
 
         tbody.appendChild(row);
-        total += item.qty * item.price;
+        total += parseFloat(itemTotal);
       });
 
       totalValue.textContent = `${currency} ${total.toFixed(2)}`;

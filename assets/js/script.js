@@ -251,9 +251,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// cart
-
-document.addEventListener('DOMContentLoaded', () => {
+// 🔁 Cart rendering on cart.html
+function renderCartPage() {
   const cartBox = document.querySelector('.cart-box');
   const summaryItems = document.querySelectorAll('.summary-item span:last-child');
 
@@ -296,4 +295,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   summaryItems[0].textContent = `$${subtotal.toFixed(2)}`;
   summaryItems[1].textContent = `$${subtotal.toFixed(2)}`;
+}
+
+// 🛒 Attach add-to-cart on index.html
+function setupAddToCart() {
+  const buttons = document.querySelectorAll('.card-action-btn');
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const productCard = button.closest('.product-card');
+      const title = productCard.querySelector('.card-title')?.textContent;
+      const price = productCard.querySelector('.card-price')?.getAttribute('value');
+      const image = productCard.querySelector('.default')?.getAttribute('src');
+
+      if (!title || !price || !image) return;
+
+      const product = { title, price, image };
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.push(product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+
+      alert("Added to cart!");
+    });
+  });
+}
+
+// 🧠 Auto-select based on page
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.querySelector('.cart-box')) renderCartPage();
+  setupAddToCart();
 });

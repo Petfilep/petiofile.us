@@ -249,3 +249,20 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
+
+
+document.querySelectorAll('.card-action-btn').forEach(button => {
+  button.addEventListener('click', function () {
+    const productCard = this.closest('.product-card');
+    const title = productCard.querySelector('.card-title').textContent;
+    const price = productCard.querySelector('.card-price').getAttribute('value');
+    const image = productCard.querySelector('.default').getAttribute('src');
+
+    const product = { title, price, image };
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    alert("Item added to cart!");
+  });
+});

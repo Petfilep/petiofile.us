@@ -1295,16 +1295,18 @@ footer a:hover {
 
 
 #user-name {
-  margin-left: 6px;
-  font-weight: 500;
+  display: inline !important;
+  visibility: visible !important;
+  font-weight: 600;
   font-size: 14px;
-  color: inherit;
+  color: white !important;
 }
 
 #user-btn {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  color: white;
 }
 
 

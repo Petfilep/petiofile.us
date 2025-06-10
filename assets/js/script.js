@@ -263,101 +263,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+//cart
 
 
+document.querySelectorAll('.card-action-btn').forEach(button => {
+  button.addEventListener('click', function () {
+    const productCard = this.closest('.product-card');
+    const title = productCard.querySelector('.card-title').textContent;
+    const price = productCard.querySelector('.card-price').getAttribute('value');
+    const image = productCard.querySelector('.default').getAttribute('src');
 
-// 🔁 Cart rendering on cart.html with quantity controls
-function renderCartPage() {
-  const cartBox = document.querySelector('.cart-box');
-  const summaryItems = document.querySelectorAll('.summary-item span:last-child');
+    const product = { title, price, image };
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
 
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-  if (cart.length === 0) {
-    cartBox.innerHTML = '<p class="cart-message">Your cart is empty. <a href="index.html">Go back</a></p>';
-    summaryItems[0].textContent = "$0.00";
-    summaryItems[1].textContent = "$0.00";
-    return;
-  }
-
-  cartBox.innerHTML = '';
-  let subtotal = 0;
-  const productMap = {};
-
-  cart.forEach(item => {
-    const key = `${item.title}_${item.price}`;
-    if (!productMap[key]) {
-      productMap[key] = { ...item, quantity: 1 };
-    } else {
-      productMap[key].quantity++;
-    }
+    alert("Item added to cart!");
   });
-
-  Object.entries(productMap).forEach(([key, item]) => {
-    const div = document.createElement('div');
-    div.className = "cart-item";
-    div.innerHTML = `
-      <div style="display: flex; align-items: center; margin-bottom: 15px;">
-        <img src="${item.image}" alt="${item.title}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 15px;">
-        <div style="flex-grow: 1;">
-          <p style="margin: 0;"><strong>${item.title}</strong></p>
-          <p style="margin: 0;">$${item.price}</p>
-          <div style="margin-top: 5px;">
-            <button onclick="updateQuantity('${key}', -1)">-</button>
-            <span id="qty-${key}" style="margin: 0 10px;">${item.quantity}</span>
-            <button onclick="updateQuantity('${key}', 1)">+</button>
-          </div>
-        </div>
-      </div>`;
-    cartBox.appendChild(div);
-    subtotal += parseFloat(item.price) * item.quantity;
-  });
-
-  summaryItems[0].textContent = `$${subtotal.toFixed(2)}`;
-  summaryItems[1].textContent = `$${subtotal.toFixed(2)}`;
-}
-
-function updateQuantity(key, change) {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const filtered = cart.filter(item => `${item.title}_${item.price}` === key);
-
-  if (filtered.length === 0 && change > 0) return;
-
-  if (change > 0) {
-    cart.push(filtered[0]);
-  } else {
-    const index = cart.findIndex(item => `${item.title}_${item.price}` === key);
-    if (index > -1) cart.splice(index, 1);
-  }
-
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCartPage();
-}
-
-// 🛒 Attach add-to-cart on index.html
-function setupAddToCart() {
-  const buttons = document.querySelectorAll('.card-action-btn');
-  buttons.forEach(button => {
-    button.addEventListener('click', () => {
-      const productCard = button.closest('.product-card');
-      const title = productCard.querySelector('.card-title')?.textContent;
-      const price = productCard.querySelector('.card-price')?.getAttribute('value');
-      const image = productCard.querySelector('.default')?.getAttribute('src');
-
-      if (!title || !price || !image) return;
-
-      const product = { title, price, image };
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.push(product);
-      localStorage.setItem('cart', JSON.stringify(cart));
-
-      alert("Added to cart!");
-    });
-  });
-}
-
-// 🧠 Auto-select based on page
-document.addEventListener('DOMContentLoaded', () => {
-  if (document.querySelector('.cart-box')) renderCartPage();
-  setupAddToCart();
 });

@@ -251,7 +251,22 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// 🔁 Cart rendering on cart.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 🔁 Cart rendering on cart.html with quantity controls
 function renderCartPage() {
   const cartBox = document.querySelector('.cart-box');
   const summaryItems = document.querySelectorAll('.summary-item span:last-child');
@@ -278,15 +293,20 @@ function renderCartPage() {
     }
   });
 
-  Object.values(productMap).forEach(item => {
+  Object.entries(productMap).forEach(([key, item]) => {
     const div = document.createElement('div');
     div.className = "cart-item";
     div.innerHTML = `
       <div style="display: flex; align-items: center; margin-bottom: 15px;">
         <img src="${item.image}" alt="${item.title}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 15px;">
-        <div>
+        <div style="flex-grow: 1;">
           <p style="margin: 0;"><strong>${item.title}</strong></p>
-          <p style="margin: 0;">$${item.price} × ${item.quantity}</p>
+          <p style="margin: 0;">$${item.price}</p>
+          <div style="margin-top: 5px;">
+            <button onclick="updateQuantity('${key}', -1)">-</button>
+            <span id="qty-${key}" style="margin: 0 10px;">${item.quantity}</span>
+            <button onclick="updateQuantity('${key}', 1)">+</button>
+          </div>
         </div>
       </div>`;
     cartBox.appendChild(div);
@@ -295,6 +315,23 @@ function renderCartPage() {
 
   summaryItems[0].textContent = `$${subtotal.toFixed(2)}`;
   summaryItems[1].textContent = `$${subtotal.toFixed(2)}`;
+}
+
+function updateQuantity(key, change) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const filtered = cart.filter(item => `${item.title}_${item.price}` === key);
+
+  if (filtered.length === 0 && change > 0) return;
+
+  if (change > 0) {
+    cart.push(filtered[0]);
+  } else {
+    const index = cart.findIndex(item => `${item.title}_${item.price}` === key);
+    if (index > -1) cart.splice(index, 1);
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCartPage();
 }
 
 // 🛒 Attach add-to-cart on index.html

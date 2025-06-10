@@ -241,7 +241,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (userName) {
           userName.textContent = `Hi, ${user.username}`;
           userName.style.display = "inline";
-          userName.style.visibility = "visible";
         }
         if (dropdownUsername) dropdownUsername.textContent = user.username;
       })

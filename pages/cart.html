@@ -201,76 +201,93 @@
     <button class="checkout-button">Check out</button>
   </div>
 
-  <script>
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const tbody = document.querySelector('#cart-table tbody');
-    const totalValue = document.getElementById('total-value');
-    const currencySelector = document.getElementById('currency-selector');
-    let currency = currencySelector.value;
+<script>
+function updateCartBadge() {
+  try {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + (parseInt(item.qty) || 1), 0);
+    const badge = document.querySelector('.btn-badge');
+    if (badge) badge.textContent = totalItems;
+  } catch (err) {
+    console.error("Failed to update cart badge:", err);
+  }
+}
 
-    const conversionRates = {
-      NPR: 1,
-      USD: 0.0075,
-      EGP: 0.36,
-      INR: 0.62
-    };
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
+  renderCart();
+});
 
-    function renderCart() {
-      tbody.innerHTML = '';
-      let total = 0;
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+const tbody = document.querySelector('#cart-table tbody');
+const totalValue = document.getElementById('total-value');
+const currencySelector = document.getElementById('currency-selector');
+let currency = currencySelector.value;
 
-      cart.forEach((item, i) => {
-        const priceInSelectedCurrency = (item.price * conversionRates[currency]).toFixed(2);
-        const itemTotal = (item.qty * priceInSelectedCurrency).toFixed(2);
+const conversionRates = {
+  NPR: 1,
+  USD: 0.0075,
+  EGP: 0.36,
+  INR: 0.62
+};
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>
-            <div class="product-info">
-              <img src="${item.image}" alt="${item.title}" />
-              <div>
-                <div><strong>${item.title}</strong></div>
-                <div>${currency} ${priceInSelectedCurrency}</div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <div class="quantity-selector">
-              <button onclick="updateQty(${i}, -1)">−</button>
-              <span>${item.qty}</span>
-              <button onclick="updateQty(${i}, 1)">+</button>
-              <button class="delete-btn" onclick="removeItem(${i})">🗑️</button>
-            </div>
-          </td>
-          <td>${currency} ${itemTotal}</td>
-        `;
+function renderCart() {
+  tbody.innerHTML = '';
+  let total = 0;
 
-        tbody.appendChild(row);
-        total += parseFloat(itemTotal);
-      });
+  cart.forEach((item, i) => {
+    const priceInSelectedCurrency = (item.price * conversionRates[currency]).toFixed(2);
+    const itemTotal = (item.qty * priceInSelectedCurrency).toFixed(2);
 
-      totalValue.textContent = `${currency} ${total.toFixed(2)}`;
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>
+        <div class="product-info">
+          <img src="${item.image.replace(/^\.\//, '/')}" alt="${item.title}" />
+          <div>
+            <div><strong>${item.title}</strong></div>
+            <div>${currency} ${priceInSelectedCurrency}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="quantity-selector">
+          <button onclick="updateQty(${i}, -1)">−</button>
+          <span>${item.qty}</span>
+          <button onclick="updateQty(${i}, 1)">+</button>
+          <button class="delete-btn" onclick="removeItem(${i})">🗑️</button>
+        </div>
+      </td>
+      <td>${currency} ${itemTotal}</td>
+    `;
 
-    function updateQty(index, change) {
-      cart[index].qty += change;
-      if (cart[index].qty <= 0) cart.splice(index, 1);
-      renderCart();
-    }
+    tbody.appendChild(row);
+    total += parseFloat(itemTotal);
+  });
 
-    function removeItem(index) {
-      cart.splice(index, 1);
-      renderCart();
-    }
+  totalValue.textContent = `${currency} ${total.toFixed(2)}`;
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartBadge();
+}
 
-    currencySelector.addEventListener('change', () => {
-      currency = currencySelector.value;
-      renderCart();
-    });
+function updateQty(index, change) {
+  cart[index].qty += change;
+  if (cart[index].qty <= 0) cart.splice(index, 1);
+  renderCart();
+}
 
-    cart = cart.map(i => ({ ...i, qty: i.qty || 1 }));
-    renderCart();
-  </script>
+function removeItem(index) {
+  cart.splice(index, 1);
+  renderCart();
+}
+
+currencySelector.addEventListener('change', () => {
+  currency = currencySelector.value;
+  renderCart();
+});
+
+cart = cart.map(i => ({ ...i, qty: i.qty || 1 }));
+</script>
+
 </body>
 </html>

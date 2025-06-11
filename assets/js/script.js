@@ -281,3 +281,18 @@ document.querySelectorAll('.card-action-btn').forEach(button => {
     alert("Item added to cart!");
   });
 });
+
+//cart increase amt
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const totalItems = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+  const badge = document.querySelector('.btn-badge');
+  if (badge) badge.textContent = totalItems;
+}
+
+// After updating cart:
+localStorage.setItem('cart', JSON.stringify(cart));
+updateCartBadge(); // ← call this!
+
+// On page load:
+document.addEventListener('DOMContentLoaded', updateCartBadge);

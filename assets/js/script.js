@@ -284,15 +284,18 @@ document.querySelectorAll('.card-action-btn').forEach(button => {
 
 //cart increase amt
 function updateCartBadge() {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const totalItems = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
-  const badge = document.querySelector('.btn-badge');
-  if (badge) badge.textContent = totalItems;
+  try {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + (parseInt(item.qty) || 1), 0);
+    const badge = document.querySelector('.btn-badge');
+    if (badge) badge.textContent = totalItems;
+  } catch (err) {
+    console.error("Failed to update cart badge:", err);
+  }
 }
 
-// After updating cart:
-localStorage.setItem('cart', JSON.stringify(cart));
-updateCartBadge(); // ← call this!
-
-// On page load:
 document.addEventListener('DOMContentLoaded', updateCartBadge);
+
+// Optional: Call this anywhere else in your script after modifying the cart:
+// localStorage.setItem('cart', JSON.stringify(cart));
+// updateCartBadge();

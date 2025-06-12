@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px;
+      gap: 50px;
+      background: #fff9f5;
+    }
+
+    .form-container, .summary {
+      background: #ffffff;
+      padding: 35px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #e85a4f;
+    }
+
+    label {
+      font-weight: 600;
+      color: #444;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      background: #fdfdfd;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #f2852c;
+      background: #fffefc;
+    }
+
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .payment-options label {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #fff2e6;
+      border: 1px solid #f6c89f;
+      padding: 12px 18px;
+      border-radius: 8px;
+      transition: 0.3s ease;
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .payment-options label:hover,
+    .payment-options input[type="radio"]:checked + img + span {
+      background: #ffe5cc;
+      cursor: pointer;
+    }
+
+    .payment-options input[type="radio"] {
+      display: none;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #f6c89f;
+      background: #fff2e6;
+      transition: 0.3s;
+    }
+
+    .payment-option.selected {
+      background: #ffd8b1;
+      border-color: #f2852c;
+      animation: pop-select 0.25s ease-in-out;
+    }
+
+    @keyframes pop-select {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+
+    .payment-option img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .complete-btn {
+      background: #f2852c;
+      color: white;
+      font-weight: bold;
+      padding: 15px;
+      border: none;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .complete-btn:hover {
+      background: #d76b18;
+    }
+
+    .summary {
+      font-size: 16px;
+    }
+
+    .summary img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 12px;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      display: none;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .popup img {
+      width: 220px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .popup input[type="file"] {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+.coupon-toggle {
+  background: #fefefe;
+  border: 1px solid #d33;
+  color: #d33;
+  font-weight: bold;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.coupon-content {
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 16px;
+  background: #fff;
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 20px;
+}
+
+.coupon-content input[type="text"] {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.coupon-content .complete-btn {
+  background: #e85a4f;
+  font-weight: bold;
+  padding: 12px;
+}
+
+  </style>
+</head>
+<body>
+  <form class="form-container" id="checkout-form">
+    <h2>Contact</h2>
+    <input type="email" placeholder="Email" required>
+
+    <h2>Payment</h2>
+    <div class="payment-options">
+      <label class="payment-option"><input type="radio" name="payment" value="esewa" required><img src="/assets/images/esewa.png"><span>eSewa</span></label>
+      <label class="payment-option"><input type="radio" name="payment" value="khalti"><img src="/assets/images/khalti.png"><span>Khalti</span></label>
+      <label class="payment-option"><input type="radio" name="payment" value="imepay"><img src="/assets/images/imepay.png"><span>IME Pay</span></label>
+    </div>
+
+    <h2>Billing address</h2>
+    <input type="text" placeholder="Full name" required>
+    <input type="text" placeholder="Address" required>
+    <input type="text" placeholder="City" required>
+    <input type="text" placeholder="Phone" required>
+
+    <button type="submit" class="complete-btn">Complete order</button>
+  </form>
+
+
+    
+
+<div class="summary" id="checkout-summary">
+  <h2>Your Furry Friend’s Order</h2>
+  <div id="checkout-items"></div>
+  <div class="coupon-toggle" onclick="toggleCoupon()">
+    Apply Discount Coupon <span id="coupon-arrow">▼</span>
+  </div>
+  <div class="coupon-content" id="coupon-content" style="display: none; margin-top: 10px;">
+    <input type="text" placeholder="Discount Coupon">
+    <button onclick="applyCoupon()" class="complete-btn" style="background: #e85a4f; margin-top: 10px;">
+      Apply Discount Coupon
+    </button>
+  </div>
+  <hr style="margin: 20px 0;">
+  <div class="summary-pricing" style="margin-top: 20px;">
+    <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span id="summary-subtotal">NPR 0.00</span></div>
+    <div style="display: flex; justify-content: space-between;"><span>Shipping:</span><span>NPR 0.00</span></div>
+  </div>
+  <hr style="margin: 20px 0;">
+  <strong id="summary-total">Total: NPR 0.00</strong>
+</div>
+
+
+  <div class="popup" id="payment-popup">
+    <div class="popup-content">
+      <h3>Scan QR to Pay</h3>
+      <img src="/assets/images/payment-qr.png" alt="QR">
+      <input type="file" accept="image/*">
+      <br>
+      <button onclick="confirmOrder()" class="complete-btn">Confirm & Continue</button>
+    </div>
+  </div>
+
+  <script>
+    const options = document.querySelectorAll(".payment-option input[type=radio]");
+    options.forEach(opt => {
+      opt.addEventListener("change", () => {
+        document.querySelectorAll(".payment-option").forEach(el => el.classList.remove("selected"));
+        opt.closest(".payment-option").classList.add("selected");
+      });
+    });
+
+    document.getElementById('checkout-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const selected = document.querySelector('input[name=payment]:checked').value;
+      if (selected === 'cod') {
+        window.location.href = "/pages/order-confirmation.html";
+      } else {
+        document.getElementById('payment-popup').style.display = 'flex';
+      }
+    });
+
+    function confirmOrder() {
+      window.location.href = "/pages/order-confirmation.html";
+    }
+
+    function toggleCoupon() {
+      const content = document.getElementById('coupon-content');
+      const arrow = document.getElementById('coupon-arrow');
+      const isOpen = content.style.display === 'block';
+      content.style.display = isOpen ? 'none' : 'block';
+      arrow.textContent = isOpen ? '▼' : '▲';
+    }
+
+    function applyCoupon() {
+      alert('Coupon applied (demo only).');
+    }
+   
+
+
+    function renderCheckoutItems() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const container = document.getElementById('checkout-items');
+  const subtotalSpan = document.getElementById('summary-subtotal');
+  const totalSpan = document.getElementById('summary-total');
+  let total = 0;
+
+  container.innerHTML = '';
+  cart.forEach(item => {
+    const price = item.price * (item.qty || 1);
+    total += price;
+    const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.marginBottom = '15px';
+    div.innerHTML = `
+      <img src="${item.image.replace(/^\\./, '')}" style="width:70px;height:70px;border-radius:8px;margin-right:12px;" alt="${item.title}">
+      <div>
+        <strong>${item.title}</strong><br>
+        NPR ${item.price.toFixed(2)} × ${item.qty || 1}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  subtotalSpan.textContent = `NPR ${total.toFixed(2)}`;
+  totalSpan.textContent = `Total: NPR ${total.toFixed(2)}`;
+}
+
+document.addEventListener('DOMContentLoaded', renderCheckoutItems);
+
+  </script>
+</body>
+</html>

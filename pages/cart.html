@@ -294,6 +294,12 @@ currencySelector.addEventListener('change', () => {
 });
 
 cart = cart.map(i => ({ ...i, qty: i.qty || 1 }));
+
+
+document.querySelector('.checkout-button').addEventListener('click', () => {
+  window.location.href = 'checkout.html';
+});
+
 </script>
 
 

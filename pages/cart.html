@@ -216,6 +216,13 @@ function updateCartBadge() {
 document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
   renderCart();
+  
+  // Live badge update on Add to Cart buttons
+  document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(updateCartBadge, 100); // slight delay for localStorage update
+    });
+  });
 });
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -288,6 +295,7 @@ currencySelector.addEventListener('change', () => {
 
 cart = cart.map(i => ({ ...i, qty: i.qty || 1 }));
 </script>
+
 
 </body>
 </html>

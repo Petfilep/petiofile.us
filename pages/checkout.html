@@ -323,7 +323,7 @@
     div.style.alignItems = 'center';
     div.style.marginBottom = '15px';
     div.innerHTML = `
-      <img src="${item.image.replace(/^\\./, '')}" style="width:70px;height:70px;border-radius:8px;margin-right:12px;" alt="${item.title}">
+      <img src="${item.image.startsWith('./') ? item.image.replace('./', '/') : item.image}" style="width:70px;height:70px;border-radius:8px;margin-right:12px;" alt="${item.title}">
       <div>
         <strong>${item.title}</strong><br>
         NPR ${item.price.toFixed(2)} × ${item.qty || 1}

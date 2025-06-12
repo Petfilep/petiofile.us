@@ -219,7 +219,7 @@
     <h2>Contact</h2>
     <input type="email" placeholder="Email" required>
 
-    <h2>Payment</h2>
+    <h2>Choose Payment Method</h2>
     <div class="payment-options">
       <label class="payment-option"><input type="radio" name="payment" value="esewa" required><img src="/assets/images/payment/esewa.png"><span>eSewa</span></label>
       <label class="payment-option"><input type="radio" name="payment" value="khalti"><img src="/assets/images/payment/khalti.png"><span>Khalti</span></label>
@@ -301,9 +301,159 @@
       arrow.textContent = isOpen ? '▼' : '▲';
     }
 
-    function applyCoupon() {
-      alert('Coupon applied (demo only).');
+function applyCoupon() {
+  const couponInput = document.querySelector('#coupon-content input');
+  const applyBtn = document.querySelector('#coupon-content button');
+  const code = couponInput.value.trim().toLowerCase();
+  const subtotalText = document.getElementById('summary-subtotal').textContent;
+  const totalText = document.getElementById('summary-total');
+
+  const subtotal = parseFloat(subtotalText.replace('NPR', '').trim());
+
+  const validCoupons = {
+    "petlove10": 0.10,
+    "meow20": 0.20,
+    "bark5": 0.05
+  };
+
+  const msgContainer = document.getElementById('discount-msg') || document.createElement('div');
+  msgContainer.id = 'discount-msg';
+  msgContainer.style.marginTop = '10px';
+  msgContainer.style.fontSize = '14px';
+
+  const discountRow = document.getElementById('summary-discount') || document.createElement('div');
+  discountRow.id = 'summary-discount';
+  discountRow.style.display = 'flex';
+  discountRow.style.justifyContent = 'space-between';
+  discountRow.style.marginTop = '5px';
+  const pricingBlock = document.querySelector('.summary-pricing');
+
+  if (validCoupons[code]) {
+    const discount = validCoupons[code];
+    const discountAmount = subtotal * discount;
+    const newTotal = subtotal - discountAmount;
+    totalText.textContent = `Total: NPR ${newTotal.toFixed(2)}`;
+
+    totalText.style.transition = 'transform 0.3s ease';
+    totalText.style.transform = 'scale(1.1)';
+    setTimeout(() => totalText.style.transform = 'scale(1)', 300);
+
+    discountRow.innerHTML = `<span>Discount:</span><span>- NPR ${discountAmount.toFixed(2)}</span>`;
+    pricingBlock.insertBefore(discountRow, pricingBlock.children[1]);
+
+    msgContainer.style.color = '#28a745';
+    msgContainer.textContent = `✔️ ${discount * 100}% discount applied!`;
+    totalText.insertAdjacentElement('afterend', msgContainer);
+
+    applyBtn.textContent = '✅ Applied';
+    applyBtn.disabled = true;
+    applyBtn.style.background = '#ccc';
+    applyBtn.style.cursor = 'not-allowed';
+  } else {
+    msgContainer.style.color = '#e74c3c';
+    msgContainer.textContent = '❌ Invalid coupon code.';
+    totalText.insertAdjacentElement('afterend', msgContainer);
+  }
+}
+
+
+
+
+
+
+
+
+
+// Unified checkout form submission with full validation
+const paymentForm = document.getElementById('checkout-form');
+paymentForm.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const selected = document.querySelector('input[name=payment]:checked');
+  const popup = document.getElementById('payment-popup');
+  const qrImg = popup.querySelector('img');
+  const emailInput = document.querySelector('input[type="email"]');
+  const phoneInput = document.querySelector('input[placeholder="Phone"]');
+  const payMsg = document.getElementById('pay-msg') || document.createElement('div');
+
+  let isValid = true;
+
+  // Reset styles
+  emailInput.style.borderColor = '';
+  phoneInput.style.borderColor = '';
+  phoneInput.setCustomValidity("");
+  payMsg.innerText = '';
+
+  // Validate email
+  if (!emailInput.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
+    emailInput.style.borderColor = 'red';
+    emailInput.placeholder = "Enter a valid email";
+    isValid = false;
+  }
+
+  // Validate phone (must be 10 digits)
+  const phoneValue = phoneInput.value.trim();
+  if (!/^\d{10}$/.test(phoneValue)) {
+    phoneInput.style.borderColor = 'red';
+    phoneInput.value = '';
+    phoneInput.placeholder = "Phone number must be 10 digits";
+    isValid = false;
+  }
+
+  // Validate payment selection
+  if (!selected) {
+    payMsg.textContent = '⚠️ Please choose a payment method.';
+    payMsg.style.color = '#e74c3c';
+    payMsg.style.margin = '10px 0';
+    payMsg.style.fontWeight = 'bold';
+    payMsg.id = 'pay-msg';
+    const afterElement = document.querySelector('.payment-options');
+    if (!document.getElementById('pay-msg')) {
+      afterElement.insertAdjacentElement('afterend', payMsg);
     }
+    isValid = false;
+  }
+
+  if (!isValid) return;
+
+  const method = selected.value;
+  const qrMap = {
+    esewa: "/assets/images/payment/esewa-qr.png",
+    khalti: "/assets/images/payment/khalti-qr.png",
+    imepay: "/assets/images/payment/imepay-qr.png"
+  };
+
+  qrImg.src = qrMap[method] || "/assets/images/payment-qr.png";
+  popup.style.display = 'flex';
+
+  // Style popup
+  const popupContent = popup.querySelector('.popup-content');
+  popupContent.style.borderRadius = '16px';
+  popupContent.style.padding = '30px 40px';
+  popupContent.style.display = 'flex';
+  popupContent.style.flexDirection = 'column';
+  popupContent.style.alignItems = 'center';
+
+  qrImg.style.border = 'none';
+  qrImg.style.borderRadius = '12px';
+  qrImg.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+});
+
+// Require file upload before confirming order
+function confirmOrder() {
+  const fileInput = document.querySelector('.popup input[type="file"]');
+  if (!fileInput || !fileInput.files.length) {
+    fileInput.style.border = '2px solid red';
+    fileInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  window.location.href = "/pages/order-confirmation.html";
+}
+
+
+
+
+
    
 
 

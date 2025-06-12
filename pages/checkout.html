@@ -307,43 +307,41 @@
    
 
 
-function renderCheckoutItems() {
-  const cart = (JSON.parse(localStorage.getItem('cart')) || []).map(item => ({
-    ...item,
-    qty: parseInt(item.qty || 1),
-    price: parseFloat(item.price)
-  }));
+    function renderCheckoutItems() {
+      const cart = (JSON.parse(localStorage.getItem('cart')) || []).map(item => ({
+        ...item,
+        qty: parseInt(item.qty || 1),
+        price: parseFloat(item.price)
+      }));
 
-  const container = document.getElementById('checkout-items');
-  const subtotalSpan = document.getElementById('summary-subtotal');
-  const totalSpan = document.getElementById('summary-total');
-  let total = 0;
+      const container = document.getElementById('checkout-items');
+      const subtotalSpan = document.getElementById('summary-subtotal');
+      const totalSpan = document.getElementById('summary-total');
+      let total = 0;
 
-  container.innerHTML = '';
-  cart.forEach(item => {
-    const itemTotal = item.price * item.qty;
-    total += itemTotal;
-    const div = document.createElement('div');
-    div.style.display = 'flex';
-    div.style.alignItems = 'center';
-    div.style.marginBottom = '15px';
-    div.innerHTML = `
-      <img src="${item.image.startsWith('./') ? item.image.replace('./', '/') : item.image}" style="width:70px;height:70px;border-radius:8px;margin-right:12px;" alt="${item.title}">
-      <div>
-        <strong>${item.title}</strong><br>
-        NPR ${item.price.toFixed(2)} × ${item.qty}
-      </div>
-    `;
-    container.appendChild(div);
-  });
+      container.innerHTML = '';
+      cart.forEach(item => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.marginBottom = '15px';
+        div.innerHTML = `
+          <img src="${item.image.startsWith('./') ? item.image.replace('./', '/') : item.image}" style="width:70px;height:70px;border-radius:8px;margin-right:12px;" alt="${item.title}">
+          <div>
+            <strong>${item.title}</strong><br>
+            NPR ${item.price.toFixed(2)} × ${item.qty}
+          </div>
+        `;
+        container.appendChild(div);
+      });
 
-  subtotalSpan.textContent = `NPR ${total.toFixed(2)}`;
-  totalSpan.textContent = `Total: NPR ${total.toFixed(2)}`;
-}
+      subtotalSpan.textContent = `NPR ${total.toFixed(2)}`;
+      totalSpan.textContent = `Total: NPR ${total.toFixed(2)}`;
+    }
 
-
-
-document.addEventListener('DOMContentLoaded', renderCheckoutItems);
+    document.addEventListener('DOMContentLoaded', renderCheckoutItems);
 
   </script>
 </body>

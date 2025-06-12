@@ -294,8 +294,29 @@ function updateCartBadge() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', updateCartBadge);
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
 
-// Optional: Call this anywhere else in your script after modifying the cart:
-// localStorage.setItem('cart', JSON.stringify(cart));
-// updateCartBadge();
+  const buttons = document.querySelectorAll('[data-add-to-cart]');
+  buttons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      const productCard = btn.closest('.product-card');
+      const title = productCard.querySelector('.card-title')?.textContent?.trim() || 'Untitled';
+      const price = parseFloat(productCard.querySelector('.card-price')?.getAttribute('value')) || 0;
+      const image = productCard.querySelector('img.img-cover.default')?.getAttribute('src') || '';
+
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existing = cart.find(p => p.title === title);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ title, price, qty: 1, image });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+    });
+  });
+});
+

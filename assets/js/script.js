@@ -283,6 +283,8 @@ document.querySelectorAll('.card-action-btn').forEach(button => {
 });
 
 //cart increase amt
+// Cart Badge Updater
+// Cart Badge Updater
 function updateCartBadge() {
   try {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -319,4 +321,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-

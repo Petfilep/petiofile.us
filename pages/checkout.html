@@ -221,7 +221,7 @@
 
     <h2>Choose Payment Method</h2>
     <div class="payment-options">
-      <label class="payment-option"><input type="radio" name="payment" value="esewa" required><img src="/assets/images/payment/esewa.png"><span>eSewa</span></label>
+      <label class="payment-option"><input type="radio" name="payment" value="esewa"><img src="/assets/images/payment/esewa.png"><span>eSewa</span></label>
       <label class="payment-option"><input type="radio" name="payment" value="khalti"><img src="/assets/images/payment/khalti.png"><span>Khalti</span></label>
       <label class="payment-option"><input type="radio" name="payment" value="imepay"><img src="/assets/images/payment/ime.jpg"><span>IME Pay</span></label>
     </div>
@@ -230,7 +230,10 @@
     <input type="text" placeholder="Full name" required>
     <input type="text" placeholder="Address" required>
     <input type="text" placeholder="City" required>
-    <input type="text" placeholder="Phone" required>
+    <input type="text" pattern="\d{10}" inputmode="numeric" placeholder="Phone" required oninvalid="this.setCustomValidity('Phone number must be exactly 10 digits')" oninput="this.setCustomValidity('')">
+
+
+
 
     <button type="submit" class="complete-btn">Complete order</button>
   </form>
@@ -260,7 +263,7 @@
 </div>
 
 
-  <div class="popup" id="payment-popup">
+  <div class="popup" id="payment-popup" style="display: none;">
     <div class="popup-content">
       <h3>Scan QR to Pay</h3>
       <img src="/assets/images/payment-qr.png" alt="QR">
@@ -271,6 +274,11 @@
   </div>
 
   <script>
+
+    // ❌ Uncheck all radios on load to prevent default selection
+    document.querySelectorAll('input[name="payment"]').forEach(input => input.checked = false);
+
+
     const options = document.querySelectorAll(".payment-option input[type=radio]");
     options.forEach(opt => {
       opt.addEventListener("change", () => {
@@ -279,15 +287,7 @@
       });
     });
 
-    document.getElementById('checkout-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const selected = document.querySelector('input[name=payment]:checked').value;
-      if (selected === 'cod') {
-        window.location.href = "/pages/order-confirmation.html";
-      } else {
-        document.getElementById('payment-popup').style.display = 'flex';
-      }
-    });
+
 
     function confirmOrder() {
       window.location.href = "/pages/order-confirmation.html";
@@ -363,7 +363,6 @@ function applyCoupon() {
 
 
 
-
 // Unified checkout form submission with full validation
 const paymentForm = document.getElementById('checkout-form');
 paymentForm.addEventListener('submit', function (e) {
@@ -374,15 +373,35 @@ paymentForm.addEventListener('submit', function (e) {
   const qrImg = popup.querySelector('img');
   const emailInput = document.querySelector('input[type="email"]');
   const phoneInput = document.querySelector('input[placeholder="Phone"]');
+  const fullNameInput = document.querySelector('input[placeholder="Full name"]');
+  const addressInput = document.querySelector('input[placeholder="Address"]');
+  const cityInput = document.querySelector('input[placeholder="City"]');
   const payMsg = document.getElementById('pay-msg') || document.createElement('div');
 
   let isValid = true;
 
   // Reset styles
-  emailInput.style.borderColor = '';
-  phoneInput.style.borderColor = '';
-  phoneInput.setCustomValidity("");
+  [emailInput, phoneInput, fullNameInput, addressInput, cityInput].forEach(el => el.style.borderColor = '');
   payMsg.innerText = '';
+
+  // Validate required billing fields
+  if (!fullNameInput.value.trim()) {
+    fullNameInput.style.borderColor = 'red';
+    fullNameInput.placeholder = 'Full name is required';
+    isValid = false;
+  }
+
+  if (!addressInput.value.trim()) {
+    addressInput.style.borderColor = 'red';
+    addressInput.placeholder = 'Address is required';
+    isValid = false;
+  }
+
+  if (!cityInput.value.trim()) {
+    cityInput.style.borderColor = 'red';
+    cityInput.placeholder = 'City is required';
+    isValid = false;
+  }
 
   // Validate email
   if (!emailInput.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
@@ -418,9 +437,9 @@ paymentForm.addEventListener('submit', function (e) {
 
   const method = selected.value;
   const qrMap = {
-    esewa: "/assets/images/payment/esewa-qr.png",
-    khalti: "/assets/images/payment/khalti-qr.png",
-    imepay: "/assets/images/payment/imepay-qr.png"
+    esewa: "/assets/images/payment/esewapet.png",
+    khalti: "/assets/images/payment/khaltipet.png",
+    imepay: "/assets/images/payment/imepet.png"
   };
 
   qrImg.src = qrMap[method] || "/assets/images/payment-qr.png";
@@ -449,8 +468,6 @@ function confirmOrder() {
   }
   window.location.href = "/pages/order-confirmation.html";
 }
-
-
 
 
 

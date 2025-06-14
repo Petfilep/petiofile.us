@@ -241,6 +241,42 @@
   }
 }
 
+#account-fields {
+  display: none;
+  margin-top: 16px;
+}
+.form-row {
+  position: relative;
+  margin-top: 10px;
+}
+.form-row input {
+  width: 100%;
+  padding: 12px;
+  padding-right: 40px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #fdfdfd;
+  box-sizing: border-box;
+}
+.form-row .eye-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 14px;
+  color: #888;
+  user-select: none;
+}
+.create-account-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  margin-top: 20px;
+  font-size: 15px;
+}
 
 
   </style>
@@ -249,15 +285,23 @@
   <form class="form-container" id="checkout-form">
     <h2>Contact</h2>
     <input type="email" placeholder="Email" required>
-    <label style="display:flex; align-items:center; gap:10px; margin-top:20px;">
-      <input type="checkbox" id="toggle-account"> Create an account?
-    </label>
 
-    <div id="account-fields" style="display:none; margin-top:10px;">
-      <input type="text" placeholder="Full Name" id="signup-name">
-      <input type="email" placeholder="Email" id="signup-email">
-      <input type="password" placeholder="Password" id="signup-password">
-    </div>
+    <label class="create-account-toggle">
+  <input type="checkbox" id="toggle-account"> Create an account?
+</label>
+
+<div id="account-fields">
+  <div class="form-row">
+    <input type="text" placeholder="Full Name" id="signup-name">
+  </div>
+  <div class="form-row">
+    <input type="email" placeholder="Email" id="signup-email">
+  </div>
+  <div class="form-row">
+    <input type="password" placeholder="Password" id="signup-password">
+    <span class="eye-toggle" onclick="togglePassword()">👁️</span>
+  </div>
+</div>
 
 
     <h2>Choose Payment Method</h2>
@@ -563,14 +607,19 @@ function confirmOrder() {
       document.getElementById('payment-popup').style.display = 'none';
     }
     
-      document.addEventListener('DOMContentLoaded', () => {
-    const checkbox = document.getElementById('toggle-account');
-    const fields = document.getElementById('account-fields');
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBox = document.getElementById('toggle-account');
+    const accountFields = document.getElementById('account-fields');
 
-    checkbox.addEventListener('change', () => {
-      fields.style.display = checkbox.checked ? 'block' : 'none';
+    toggleBox.addEventListener('change', () => {
+      accountFields.style.display = toggleBox.checked ? 'block' : 'none';
     });
   });
+
+  function togglePassword() {
+    const pwd = document.getElementById('signup-password');
+    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+  }
   </script>
 </body>
 </html>

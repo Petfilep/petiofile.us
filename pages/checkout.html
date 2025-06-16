@@ -292,6 +292,10 @@
   color: #888;
 }
 
+#qr-pay-amount {
+  color: #e74c3c; /* or #ff6600 for more pop */
+  font-weight: bold;
+}
 
 
   </style>
@@ -305,9 +309,10 @@
 
 <div class="create-account-wrap">
 <label class="create-account-label">
-  <input type="checkbox" id="toggle-account">
-  <span>Create an account?</span>
+  <input type="checkbox" id="toggle-account" style="width: 20px; height: 20px; accent-color: #f2852c;">
+  <span style="margin-left: 8px; color: #f2852c; font-weight: 600;">Create an account?</span>
 </label>
+
   <div id="account-fields">
     <div style="position: relative;">
       <input type="password" placeholder="🔒 Password" id="signup-password" style="padding-right: 40px;">
@@ -367,7 +372,7 @@
 
   <div class="popup" id="payment-popup" style="display: none;">
     <div class="popup-content">
-      <h3>Scan QR to Pay</h3>
+      <h3 id="qr-pay-title">Scan QR to Pay: <span id="qr-pay-amount"></span></h3>
       <img src="/assets/images/" alt="QR">
       <input type="file" accept="image/*">
       <br>
@@ -472,7 +477,7 @@ function applyCoupon() {
 
 // Unified checkout form submission with full validation
 const paymentForm = document.getElementById('checkout-form');
-paymentForm.addEventListener('submit', function (e) {
+paymentForm.addEventListener('submit', async function (e) {
   e.preventDefault();
 
   const selected = document.querySelector('input[name=payment]:checked');
@@ -543,19 +548,50 @@ paymentForm.addEventListener('submit', function (e) {
   const createAccountChecked = document.getElementById('toggle-account').checked;
   const pwdInput = document.getElementById('signup-password');
 
-  if (createAccountChecked) {
-    if (!pwdInput.value.trim()) {
-      pwdInput.style.borderColor = 'red';
-      pwdInput.placeholder = 'Password required';
-      isValid = false;
-    } else {
-      pwdInput.style.borderColor = '';
-      pwdInput.placeholder = '🔒 Password';
-    }
+if (createAccountChecked) {
+  if (!pwdInput.value.trim()) {
+    pwdInput.style.borderColor = 'red';
+    pwdInput.placeholder = 'Password required';
+    const pwdMsg = document.getElementById('pwd-msg') || document.createElement('div');
+    pwdMsg.id = 'pwd-msg';
+    pwdMsg.style.color = '#e74c3c';
+    pwdMsg.style.fontSize = '14px';
+    pwdMsg.style.marginTop = '4px';
+    pwdMsg.textContent = '⚠️ Please enter a password to create your account.';
+    pwdInput.insertAdjacentElement('afterend', pwdMsg);
+    isValid = false;
+  } else {
+    pwdInput.style.borderColor = '';
+    pwdInput.placeholder = '🔒 Password';
+    const existingMsg = document.getElementById('pwd-msg');
+    if (existingMsg) existingMsg.remove();
   }
+}
+
 
 
   if (!isValid) return;
+
+
+  if (createAccountChecked) {
+    await fetch(`${API}/api/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: fullNameInput.value.trim(),
+        email: emailInput.value.trim(),
+        password: pwdInput.value.trim()
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      localStorage.setItem('jwt', data.token);
+      localStorage.setItem('userId', data.user.id);
+    })
+    .catch(err => console.error('Signup during checkout failed', err));
+  }
+
+
 
   const method = selected.value;
   const qrMap = {
@@ -566,6 +602,10 @@ paymentForm.addEventListener('submit', function (e) {
 
   qrImg.src = qrMap[method] || "/assets/images/payment-qr.png";
   popup.style.display = 'flex';
+  const totalText = document.getElementById('summary-total').textContent;
+  const totalAmount = totalText.replace('Total: NPR', '').trim();
+  document.getElementById('qr-pay-amount').textContent = `NPR ${totalAmount}`;
+
 
   // Style popup
   const popupContent = popup.querySelector('.popup-content');

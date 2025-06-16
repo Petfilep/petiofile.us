@@ -241,42 +241,57 @@
   }
 }
 
+.create-account-wrap {
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px solid #f2852c;
+  border-radius: 8px;
+  background: #fffaf5;
+}
+
+.create-account-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #f2852c;
+  font-size: 16px;
+}
+
+.create-account-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #f2852c;
+}
+
+
+
+#create-account-wrap input[type="checkbox"] {
+  accent-color: #f2852c;
+}
+
 #account-fields {
   display: none;
-  margin-top: 16px;
-}
-.form-row {
-  position: relative;
   margin-top: 10px;
 }
-.form-row input {
+
+#account-fields input {
   width: 100%;
-  padding: 12px;
-  padding-right: 40px;
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  background: #fdfdfd;
-  box-sizing: border-box;
+  margin-top: 8px;
 }
-.form-row .eye-toggle {
+
+.eye-toggle {
   position: absolute;
   top: 50%;
   right: 12px;
   transform: translateY(-50%);
   cursor: pointer;
-  font-size: 14px;
   color: #888;
-  user-select: none;
 }
-.create-account-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  margin-top: 20px;
-  font-size: 15px;
-}
+
 
 
   </style>
@@ -286,22 +301,22 @@
     <h2>Contact</h2>
     <input type="email" placeholder="Email" required>
 
-    <label class="create-account-toggle">
-  <input type="checkbox" id="toggle-account"> Create an account?
-</label>
+    
 
-<div id="account-fields">
-  <div class="form-row">
-    <input type="text" placeholder="Full Name" id="signup-name">
-  </div>
-  <div class="form-row">
-    <input type="email" placeholder="Email" id="signup-email">
-  </div>
-  <div class="form-row">
-    <input type="password" placeholder="Password" id="signup-password">
-    <span class="eye-toggle" onclick="togglePassword()">👁️</span>
+<div class="create-account-wrap">
+<label class="create-account-label">
+  <input type="checkbox" id="toggle-account">
+  <span>Create an account?</span>
+</label>
+  <div id="account-fields">
+    <div style="position: relative;">
+      <input type="password" placeholder="🔒 Password" id="signup-password" style="padding-right: 40px;">
+      <span class="eye-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+    </div>
   </div>
 </div>
+
+
 
 
     <h2>Choose Payment Method</h2>
@@ -524,6 +539,21 @@ paymentForm.addEventListener('submit', function (e) {
     }
     isValid = false;
   }
+
+  const createAccountChecked = document.getElementById('toggle-account').checked;
+  const pwdInput = document.getElementById('signup-password');
+
+  if (createAccountChecked) {
+    if (!pwdInput.value.trim()) {
+      pwdInput.style.borderColor = 'red';
+      pwdInput.placeholder = 'Password required';
+      isValid = false;
+    } else {
+      pwdInput.style.borderColor = '';
+      pwdInput.placeholder = '🔒 Password';
+    }
+  }
+
 
   if (!isValid) return;
 

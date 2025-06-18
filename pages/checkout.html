@@ -621,15 +621,42 @@ if (createAccountChecked) {
 });
 
 // Require file upload before confirming order
-function confirmOrder() {
+async function confirmOrder() {
   const fileInput = document.querySelector('.popup input[type="file"]');
   if (!fileInput || !fileInput.files.length) {
     fileInput.style.border = '2px solid red';
     fileInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
-  window.location.href = "/pages/order-confirmation.html";
+
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const totalText = document.getElementById('summary-total').textContent;
+  const totalAmount = totalText.replace('Total: NPR', '').trim();
+  const quantity = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+
+  await fetch(`${API}/api/order`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
+    },
+    body: JSON.stringify({
+      item: JSON.stringify(cart),
+      quantity: quantity,
+      total: totalAmount
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log('Order saved:', data);
+    window.location.href = "/pages/order-confirmation.html";
+  })
+  .catch(err => {
+    console.error('Order save failed:', err);
+    alert('Error saving order. Please try again.');
+  });
 }
+
 
 
 

@@ -674,13 +674,13 @@ async function confirmOrder() {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
     },
-body: JSON.stringify({
-  customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
-  customerEmail: document.querySelector('input[type="email"]').value.trim(),
-  item: JSON.stringify(cart),
-  quantity: quantity,
-  total: totalAmount
-})
+    body: JSON.stringify({
+      customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
+      customerEmail: document.querySelector('input[type="email"]').value.trim(),
+      item: JSON.stringify(cart),
+      quantity: quantity,
+      total: totalAmount
+    })
 
   .then(res => res.json())
   .then(data => {

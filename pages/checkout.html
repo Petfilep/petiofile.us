@@ -403,9 +403,38 @@
 
 
 
-    function confirmOrder() {
-      window.location.href = "/pages/order-confirmation.html";
-    }
+async function confirmOrder() {
+  console.log('📝 Cart:', localStorage.getItem('cart'));
+  console.log('📝 JWT:', localStorage.getItem('jwt'));
+
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const totalText = document.getElementById('summary-total').textContent;
+  const totalAmount = totalText.replace('Total: NPR', '').trim();
+  const quantity = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+
+  await fetch(`${API}/api/order`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
+    },
+    body: JSON.stringify({
+      item: JSON.stringify(cart),
+      quantity: quantity,
+      total: totalAmount
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log('✅ Order saved:', data);
+    window.location.href = "/pages/order-confirmation.html";
+  })
+  .catch(err => {
+    console.error('❌ Order save failed:', err);
+    alert('There was a problem saving your order. Please try again.');
+  });
+}
+
 
     function toggleCoupon() {
       const content = document.getElementById('coupon-content');

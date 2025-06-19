@@ -412,21 +412,22 @@ async function confirmOrder() {
   const totalAmount = totalText.replace('Total: NPR', '').trim();
   const quantity = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
 
-await fetch(`${API}/api/order`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
-  },
-  body: JSON.stringify({
-    customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
-    customerEmail: document.querySelector('input[type="email"]').value.trim(),
-    item: JSON.stringify(cart),
-    quantity: quantity,
-    total: totalAmount
-  })
-})
+  await fetch(`${API}/api/order`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
+    },
+    body: JSON.stringify({
+      customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
+      customerEmail: document.querySelector('input[type="email"]').value.trim(),
+      item: JSON.stringify(cart),
+      quantity: quantity,
+      total: totalAmount
+    })
 
+
+  })
   .then(res => res.json())
   .then(data => {
     console.log('✅ Order saved:', data);
@@ -675,13 +676,11 @@ async function confirmOrder() {
       'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
     },
     body: JSON.stringify({
-      customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
-      customerEmail: document.querySelector('input[type="email"]').value.trim(),
       item: JSON.stringify(cart),
       quantity: quantity,
       total: totalAmount
     })
-
+  })
   .then(res => res.json())
   .then(data => {
     console.log('Order saved:', data);

@@ -421,10 +421,14 @@ async function confirmOrder() {
     body: JSON.stringify({
       customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
       customerEmail: document.querySelector('input[type="email"]').value.trim(),
+      customerAddress: document.querySelector('input[placeholder="Address"]').value.trim(),
+      customerCity: document.querySelector('input[placeholder="City"]').value.trim(),
+      customerPhone: document.querySelector('input[placeholder="Phone"]').value.trim(),
       item: JSON.stringify(cart),
       quantity: quantity,
       total: totalAmount
     })
+
 
 
 

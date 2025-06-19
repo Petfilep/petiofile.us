@@ -407,31 +407,37 @@ async function confirmOrder() {
   console.log('📝 Cart:', localStorage.getItem('cart'));
   console.log('📝 JWT:', localStorage.getItem('jwt'));
 
+  const fileInput = document.querySelector('.popup input[type="file"]');
+  if (!fileInput || !fileInput.files.length) {
+    alert('Please upload your payment screenshot.');
+    fileInput.style.border = '2px solid red';
+    fileInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   const totalText = document.getElementById('summary-total').textContent;
   const totalAmount = totalText.replace('Total: NPR', '').trim();
   const quantity = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
 
+  const formData = new FormData();
+  formData.append('paymentScreenshot', fileInput.files[0]);
+  formData.append('customerName', document.querySelector('input[placeholder="Full name"]').value.trim());
+  formData.append('customerEmail', document.querySelector('input[type="email"]').value.trim());
+  formData.append('customerAddress', document.querySelector('input[placeholder="Address"]').value.trim());
+  formData.append('customerCity', document.querySelector('input[placeholder="City"]').value.trim());
+  formData.append('customerPhone', document.querySelector('input[placeholder="Phone"]').value.trim());
+  formData.append('item', JSON.stringify(cart));
+  formData.append('quantity', quantity);
+  formData.append('total', totalAmount);
+
   await fetch(`${API}/api/order`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
+      // ❗ Do not set Content-Type — browser does it for FormData
     },
-    body: JSON.stringify({
-      customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
-      customerEmail: document.querySelector('input[type="email"]').value.trim(),
-      customerAddress: document.querySelector('input[placeholder="Address"]').value.trim(),
-      customerCity: document.querySelector('input[placeholder="City"]').value.trim(),
-      customerPhone: document.querySelector('input[placeholder="Phone"]').value.trim(),
-      item: JSON.stringify(cart),
-      quantity: quantity,
-      total: totalAmount
-    })
-
-
-
-
+    body: formData
   })
   .then(res => res.json())
   .then(data => {
@@ -443,6 +449,7 @@ async function confirmOrder() {
     alert('There was a problem saving your order. Please try again.');
   });
 }
+
 
 
     function toggleCoupon() {

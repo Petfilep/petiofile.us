@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Order Receipt | Petiofile</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .receipt-container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      color: #27ae60;
+      margin: 0;
+    }
+    .info, .items, .total, .status, .footer {
+      margin-top: 20px;
+    }
+    .info p {
+      margin: 2px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background: #27ae60;
+      color: #fff;
+    }
+    .total p {
+      font-size: 1.2em;
+      text-align: right;
+    }
+    .status {
+      background: #f0f9ff;
+      padding: 10px;
+      border: 1px solid #bce0fd;
+      border-radius: 4px;
+    }
+    .btn-download {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #27ae60;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    @media print {
+      .btn-download {
+        display: none;
+      }
+    }
+
+@media print {
+  body {
+    background: #fff;
+  }
+  .receipt-container {
+    border: none;
+    box-shadow: none;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+  .btn-download {
+    display: none;
+  }
+}
+
+.receipt-container {
+  width: 210mm;
+  min-height: 297mm;
+  margin: auto;
+}
+
+  </style>
+</head>
+<body>
+  <div class="receipt-container" id="receipt">
+    <div class="header">
+      <h1>Petiofile</h1>
+      <p>Order Receipt</p>
+    </div>
+
+    <div class="info">
+      <p><strong>Order ID:</strong> <span id="order-id">#<span></p>
+      <p><strong>Customer Name:</strong> <span id="customer-name">---</span></p>
+      <p><strong>Email:</strong> <span id="customer-email">---</span></p>
+      <p><strong>Address:</strong> <span id="customer-address">---</span></p>
+      <p><strong>Date:</strong> <span id="order-date"></span></p>
+    </div>
+
+    <div class="items">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th><th>Quantity</th><th>Price</th>
+          </tr>
+        </thead>
+        <tbody id="item-table">
+          <!-- rows will populate -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="total">
+      <p><strong>Total Paid: NPR <span id="order-total">0.00</span></strong></p>
+    </div>
+
+    <div class="status">
+      <p><strong>Status:</strong> Your order has been received and is now <span style="color:#3498db;">waiting for processing</span>.</p>
+      <p>You will receive shipping updates via email as we prepare and ship your items.</p>
+    </div>
+
+    <div class="footer">
+      <p>Thank you for shopping with Petiofile. We appreciate your business!</p>
+      <p>If you have any questions, contact us at <strong>support@petiofile.us</strong>.</p>
+    </div>
+
+    <button class="btn-download" onclick="window.print()">Download / Print Receipt</button>
+  </div>
+
+  <script>
+    const total = localStorage.getItem('lastOrderTotal') || '...';
+    const customerName = localStorage.getItem('lastOrderName') || '---';
+    const customerEmail = localStorage.getItem('lastOrderEmail') || '---';
+    const customerAddress = localStorage.getItem('lastOrderAddress') || '---';
+    const cartData = JSON.parse(localStorage.getItem('lastOrderCart') || '[]');
+    const date = new Date().toLocaleDateString();
+    const orderId = 'PF' + Date.now().toString().slice(-6);  // Simple generated ID
+
+    document.getElementById('order-total').textContent = total;
+    document.getElementById('customer-name').textContent = customerName;
+    document.getElementById('customer-email').textContent = customerEmail;
+    document.getElementById('customer-address').textContent = customerAddress;
+    document.getElementById('order-date').textContent = date;
+    document.getElementById('order-id').textContent = '#' + orderId;
+
+    const tableBody = document.getElementById('item-table');
+    cartData.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${item.title}</td>
+        <td>${item.qty || 1}</td>
+        <td>NPR ${item.price}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    // Clear cart
+    localStorage.removeItem('cart');
+  </script>
+</body>
+</html>

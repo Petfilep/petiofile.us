@@ -350,51 +350,64 @@ s0.parentNode.insertBefore(s1,s0);
 
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  fetch(`${API}/api/products`)
-    .then(res => res.json())
-    .then(products => {
-      const grid = document.querySelector('.product-grid');
-      products.forEach(product => {
-        const card = document.createElement('div');
-        card.className = `product-card-ui${product.sale ? ' sale' : ''}`;
-        card.innerHTML = `
-          ${product.sale ? `<span class="badge">Sale</span>` : ''}
-          <img src="${product.image}" alt="${product.title}">
-          <p class="product-title">${product.title}</p>
-          ${product.oldPrice ? `<p class="product-old-price">LE ${product.oldPrice}.00 EGP</p>` : ''}
-          <p class="product-price">LE ${product.price}.00 EGP</p>
-          <button class="card-action-btn" data-add-to-cart>
-            <ion-icon name="cart-outline"></ion-icon>
-            <span>Add to Cart</span>
-          </button>
-        `;
-        grid.appendChild(card);
-      });
-
-      attachAddToCartEvents();
+fetch(`${API}/api/products`)
+  .then(res => res.json())
+  .then(products => {
+    const grid = document.querySelector('.product-grid');
+    products.forEach(product => {
+      const card = document.createElement('div');
+      card.className = `product-card-ui${product.sale ? ' sale' : ''}`;
+      card.innerHTML = `
+        ${product.sale ? `<span class="badge">Sale</span>` : ''}
+        <img src="${product.image}" alt="${product.title}">
+        <p class="product-title">${product.title}</p>
+        ${product.oldPrice ? `<p class="product-old-price">LE ${product.oldPrice}.00 EGP</p>` : ''}
+        <p class="product-price">LE ${product.price}.00 EGP</p>
+        <button class="card-action-btn" data-add-to-cart>
+          <ion-icon name="cart-outline"></ion-icon>
+          <span>Add to Cart</span>
+        </button>
+      `;
+      grid.appendChild(card);
     });
-});
+
+    // ✅ NOW attach event listeners to the dynamically added buttons
+    attachAddToCartEvents();
+  });
+
 
 function attachAddToCartEvents() {
   document.querySelectorAll('[data-add-to-cart]').forEach(button => {
-    button.addEventListener('click', () => {
-      const card = button.closest('.product-card') || button.closest('.product-card-ui');
+    button.onclick = () => {
+      const productCard = button.closest('.product-card') || button.closest('.product-card-ui');
 
       const title = 
-        card.querySelector('.card-title')?.innerText || 
-        card.querySelector('.product-title')?.innerText || 
-        'Unknown';
+        productCard.querySelector('.card-title')?.textContent?.trim() ||
+        productCard.querySelector('.product-title')?.textContent?.trim() ||
+        'Untitled';
 
-      const priceText = 
-        card.querySelector('.card-price')?.getAttribute('value') ||
-        card.querySelector('.product-price')?.innerText ||
+      const priceText =
+        productCard.querySelector('.card-price')?.getAttribute('value') ||
+        productCard.querySelector('.product-price')?.textContent ||
         '0';
-
       const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
 
-      addToCart({ title, price });
-    });
+      const image =
+        productCard.querySelector('img.img-cover.default')?.getAttribute('src') ||
+        productCard.querySelector('img')?.getAttribute('src') ||
+        '';
+
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existing = cart.find(p => p.title === title);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ title, price, qty: 1, image });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+    };
   });
 }
-

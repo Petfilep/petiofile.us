@@ -347,3 +347,45 @@ s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('/api/products')
+    .then(res => res.json())
+    .then(products => {
+      const grid = document.querySelector('.product-grid');
+
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = `product-card-ui${product.sale ? ' sale' : ''}`;
+        card.innerHTML = `
+          ${product.sale ? `<span class="badge">Sale</span>` : ''}
+          <img src="${product.image}" alt="${product.title}">
+          <p class="product-title">${product.title}</p>
+          ${product.oldPrice ? `<p class="product-old-price">LE ${product.oldPrice}.00 EGP</p>` : ''}
+          <p class="product-price">LE ${product.price}.00 EGP</p>
+          <button class="card-action-btn" data-add-to-cart>
+            <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
+            <span>Add to Cart</span>
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+
+      attachAddToCartEvents(); // Call a function to hook buttons
+    });
+});
+
+// Helper to hook Add to Cart buttons
+function attachAddToCartEvents() {
+  document.querySelectorAll('[data-add-to-cart]').forEach(button => {
+    button.addEventListener('click', () => {
+      const card = button.closest('.product-card-ui');
+      const title = card.querySelector('.product-title')?.innerText || 'Unknown';
+      const priceText = card.querySelector('.product-price')?.innerText || '0';
+      const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
+      addToCart({ title, price });
+    });
+  });
+}

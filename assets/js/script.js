@@ -302,10 +302,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const buttons = document.querySelectorAll('[data-add-to-cart]');
   buttons.forEach((btn, index) => {
     btn.addEventListener('click', () => {
-      const productCard = btn.closest('.product-card');
-      const title = productCard.querySelector('.card-title')?.textContent?.trim() || 'Untitled';
-      const price = parseFloat(productCard.querySelector('.card-price')?.getAttribute('value')) || 0;
-      const image = productCard.querySelector('img.img-cover.default')?.getAttribute('src') || '';
+const productCard = btn.closest('.product-card') || btn.closest('.product-card-ui');
+
+const title =
+  productCard.querySelector('.card-title')?.textContent?.trim() ||
+  productCard.querySelector('.product-title')?.textContent?.trim() ||
+  'Untitled';
+
+const priceText =
+  productCard.querySelector('.card-price')?.getAttribute('value') ||
+  productCard.querySelector('.product-price')?.textContent ||
+  '0';
+const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
+
+const image =
+  productCard.querySelector('img.img-cover.default')?.getAttribute('src') ||
+  productCard.querySelector('img')?.getAttribute('src') ||
+  '';
+
 
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
       const existing = cart.find(p => p.title === title);
@@ -321,3 +335,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+
+
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6857aa29a2278f190d24fc8d/1iub71cs9';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();

@@ -383,23 +383,8 @@ function attachAddToCartEvents() {
       const title = card.querySelector('.product-title').innerText;
       const priceText = card.querySelector('.product-price').innerText;
       const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
-
       addToCart({ title, price });
     });
   });
-}
-
-
-
-function addToCart(item) {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push(item);
-  localStorage.setItem('cart', JSON.stringify(cart));
-
-  // Update the cart badge
-  const badge = document.querySelector('.btn-badge');
-  if (badge) {
-    badge.innerText = cart.length;
-  }
 }
 

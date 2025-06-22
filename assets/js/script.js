@@ -379,12 +379,23 @@ document.addEventListener('DOMContentLoaded', () => {
 function attachAddToCartEvents() {
   document.querySelectorAll('[data-add-to-cart]').forEach(button => {
     button.addEventListener('click', () => {
-      const card = button.closest('.product-card-ui');
-      const title = card.querySelector('.product-title').innerText;
-      const priceText = card.querySelector('.product-price').innerText;
+      const card = button.closest('.product-card-ui') || button.closest('.product-card');
+
+      const title =
+        card.querySelector('.product-title')?.innerText ||
+        card.querySelector('.card-title')?.innerText ||
+        'Unknown';
+
+      const priceText =
+        card.querySelector('.product-price')?.innerText ||
+        card.querySelector('.card-price')?.getAttribute('value') ||
+        '0';
+
       const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
+
       addToCart({ title, price });
     });
   });
 }
+
 

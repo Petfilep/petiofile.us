@@ -351,8 +351,7 @@ s0.parentNode.insertBefore(s1,s0);
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetch('https://api.petiofile.us/api/products')
-
+  fetch(`${API}/api/products`)
     .then(res => res.json())
     .then(products => {
       const grid = document.querySelector('.product-grid');

@@ -442,6 +442,12 @@ async function confirmOrder() {
   .then(res => res.json())
   .then(data => {
     console.log('✅ Order saved:', data);
+    localStorage.setItem('lastOrderCart', JSON.stringify(cart));
+    localStorage.setItem('lastOrderTotal', totalAmount);
+    localStorage.setItem('lastOrderName', document.querySelector('input[placeholder="Full name"]').value.trim());
+    localStorage.setItem('lastOrderEmail', document.querySelector('input[type="email"]').value.trim());
+    localStorage.setItem('lastOrderAddress', document.querySelector('input[placeholder="Address"]').value.trim());
+
     window.location.href = "/pages/order-confirmation.html";
   })
   .catch(err => {

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Orders Dashboard</title>
+  <link rel="stylesheet" href="./assets/css/admin.css">
+</head>
+<style>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 20px;
+}
+
+.admin-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-btn {
+  background: #e0e0e0;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.search-bar {
+  display: flex;
+  gap: 5px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-bar button {
+  padding: 6px 10px;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.order-table th,
+.order-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.order-table th {
+  background: #f0f0f0;
+}
+
+.order-table tr:hover {
+  background: #f9f9f9;
+}
+
+
+#pagination button {
+  margin: 0 4px;
+  padding: 6px 10px;
+}
+
+
+
+</style>
+<body>
+  <div class="admin-header">
+    <h1>Orders</h1>
+    <div class="filter-bar">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">Pending</button>
+      <button class="filter-btn">Processing</button>
+      <button class="filter-btn">Ready for Pickup</button>
+      <button class="filter-btn">Delivery In Progress</button>
+      <button class="filter-btn">In Transit</button>
+      <button class="filter-btn">Completed</button>
+      <button class="filter-btn">Failed</button>
+      <button class="filter-btn">Others</button>
+    </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search by Name, Phone, Order ID">
+        <button type="button" onclick="handleSearch()">🔍</button>
+        <button type="button" onclick="resetSearch()">Reset</button>
+      </div>
+
+    </div>
+  <table class="order-table" id="ordersTable">
+    <thead>
+      <tr>
+        <th><input type="checkbox"></th>
+        <th>Order</th>
+        <th>Customer</th>
+        <th>Order Total</th>
+        <th>Item(s)</th>
+        <th>Payment</th>
+        <th>Order Status</th>
+        <th>Invoice</th>
+      </tr>
+
+    </thead>
+    <tbody id="orderTableBody">
+      <!-- Dynamic order rows injected here -->
+    </tbody>
+  </table>
+  <div id="pagination" style="margin-top: 10px;"></div>
+  <div id="loading" style="text-align: center; margin-top: 60px; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Loading orders...</div>
+  <script src="./assets/js/admin-orders.js"></script>
+
+
+<script>
+let allOrders = [];
+let filteredOrders = [];
+let currentPage = 1;
+const pageSize = 10;
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('/api/admin/orders')
+    .then(res => res.json())
+    .then(data => {
+      allOrders = data;
+      filteredOrders = [...allOrders];
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('ordersTable').style.display = '';
+      renderPage(1);
+    })
+    .catch(() => {
+      document.getElementById('loading').innerText = 'Failed to load orders.';
+    });
+});
+
+function renderPage(page) {
+  currentPage = page;
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const pageOrders = filteredOrders.slice(start, end);
+  renderOrders(pageOrders);
+  renderPagination();
+}
+
+function renderOrders(orders) {
+  const tbody = document.getElementById('orderTableBody');
+  tbody.innerHTML = '';
+  orders.forEach(order => {
+    const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox"></td>
+        <td>${order.id}</td>
+        <td>${order.customer_name}<br>${order.customer_email}</td>
+        <td>Rs ${order.total}</td>
+        <td>${order.item} x ${order.quantity}</td>
+        <td>${order.payment_screenshot ? `<a href="${order.payment_screenshot}" target="_blank">View</a>` : 'Pending'}</td>
+        <td>
+          <select onchange="confirmStatusChange(${order.id}, this.value)">
+            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+          </select>
+        </td>
+        <td><button onclick="printInvoice(${order.id})">📄</button></td>
+      `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+function renderPagination() {
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = ''; // Clear old buttons
+
+  const totalPages = Math.ceil(filteredOrders.length / pageSize);
+  if (totalPages <= 1) return;
+
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = 'Prev';
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.onclick = () => renderPage(currentPage - 1);
+  pagination.appendChild(prevBtn);
+
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = 'Next';
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.onclick = () => renderPage(currentPage + 1);
+  pagination.appendChild(nextBtn);
+}
+
+function confirmStatusChange(id, status) {
+  if (confirm(`Are you sure you want to change status to ${status}?`)) {
+    fetch(`/api/admin/orders/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    })
+    .then(res => res.json())
+    .then(() => alert('Status updated!'))
+    .catch(() => alert('Failed to update status.'));
+  } else {
+    renderPage(currentPage); // reset dropdown
+  }
+}
+
+function printInvoice(id) {
+  const order = allOrders.find(o => o.id === id);
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html>
+    <head>
+      <title>Invoice #${id}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { border-bottom: 1px solid #000; }
+        .invoice-details { margin-bottom: 20px; }
+        .invoice-details p { margin: 5px 0; }
+        .footer { margin-top: 30px; font-size: 12px; color: #555; }
+      </style>
+    </head>
+    <body>
+      <h1>Invoice #${id}</h1>
+      <div class="invoice-details">
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+        <p><strong>Customer:</strong> ${order.customer_name}</p>
+        <p><strong>Email:</strong> ${order.customer_email}</p>
+        <p><strong>Items:</strong> ${order.item} x ${order.quantity}</p>
+        <p><strong>Total:</strong> Rs ${order.total}</p>
+        <p><strong>Status:</strong> ${order.status}</p>
+      </div>
+      <div class="footer">
+        Thank you for your business!
+      </div>
+    </body>
+    </html>
+  `);
+  win.print();
+}
+
+
+
+document.querySelector('.search-bar button').addEventListener('click', () => {
+  const query = document.querySelector('.search-bar input').value.trim().toLowerCase();
+  filteredOrders = allOrders.filter(o =>
+    o.customer_name.toLowerCase().includes(query) ||
+    o.customer_email.toLowerCase().includes(query) ||
+    o.id.toString().includes(query)
+  );
+  renderPage(1);
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const status = btn.textContent.trim();
+    filteredOrders = (status === 'All')
+      ? [...allOrders]
+      : allOrders.filter(o => o.status === status);
+    renderPage(1);
+  });
+});
+
+
+function resetSearch() {
+  document.querySelector('.search-bar input').value = '';
+  filteredOrders = [...allOrders];
+  renderPage(1);
+}
+
+function handleSearch() {
+  const query = document.querySelector('.search-bar input').value.trim().toLowerCase();
+  filteredOrders = allOrders.filter(o =>
+    o.customer_name.toLowerCase().includes(query) ||
+    o.customer_email.toLowerCase().includes(query) ||
+    o.id.toString().includes(query)
+  );
+  renderPage(1);
+}
+
+</script>
+
+
+  
+
+<script src="/assets/js/api-config.js"></script> 
+
+</body>
+</html>

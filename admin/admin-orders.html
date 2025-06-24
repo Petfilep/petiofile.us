@@ -262,19 +262,29 @@ function renderPagination() {
 
 function confirmStatusChange(id, status) {
   if (confirm(`Are you sure you want to change status to ${status}?`)) {
-    fetch(`https://api.petiofile.us/api/orders/${orderId}/status`, {
+    fetch(`https://api.petiofile.us/api/orders/${id}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus })
+      body: JSON.stringify({ status: status })
     })
-    .then(res => res.json())
-    .then(data => console.log('Status updated!', data))
-    .catch(err => console.error('Failed to update:', err));
-
+    .then(res => {
+      if (!res.ok) throw new Error('Request failed');
+      return res.json();
+    })
+    .then(data => {
+      alert('Status updated successfully!');
+      // Optionally reload or re-fetch orders
+    })
+    .catch(err => {
+      alert('Failed to update status.');
+      console.error('Failed to update:', err);
+      renderPage(currentPage); // reset dropdown
+    });
   } else {
     renderPage(currentPage); // reset dropdown
   }
 }
+
 
 function printInvoice(id) {
   const order = allOrders.find(o => o.id === id);

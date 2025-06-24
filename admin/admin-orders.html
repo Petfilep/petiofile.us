@@ -281,41 +281,56 @@ function printInvoice(id) {
   win.document.write(`
     <html>
     <head>
-      <title>PetioFile Invoice #${id}</title>
+      <title>Shipping Label | PetioFile Invoice #${id}</title>
       <style>
-        body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 28px; }
-        .details { margin-bottom: 20px; }
-        .details p { margin: 4px 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        table, th, td { border: 1px solid #ccc; }
-        th, td { padding: 8px; text-align: left; }
-        .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #777; }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .label { border: 2px solid #000; padding: 20px; width: 400px; }
+        .label h1 { font-size: 22px; margin-bottom: 10px; }
+        .section { margin-bottom: 12px; }
+        .section strong { display: block; font-size: 14px; margin-bottom: 2px; }
+        .barcode { text-align: center; margin: 20px 0; }
+        .footer { font-size: 10px; text-align: center; margin-top: 20px; color: #555; }
       </style>
     </head>
     <body>
-      <div class="header">
-        <h1>PetioFile Invoice</h1>
-        <p>Invoice #${id} | Date: ${new Date().toLocaleDateString()}</p>
+      <div class="label">
+        <h1>PetioFile Shipping Label</h1>
+        <div class="section">
+          <strong>Order #${id}</strong>
+          Date: ${new Date().toLocaleDateString()}
+        </div>
+        <div class="section">
+          <strong>Ship To:</strong>
+          ${order.customer_name}<br>
+          ${order.customer_address}, ${order.customer_city}<br>
+          Phone: ${order.customer_phone}<br>
+          Email: ${order.customer_email}
+        </div>
+        <div class="section">
+          <strong>Items:</strong>
+          ${order.item}<br>
+          Quantity: ${order.quantity}<br>
+          Total: Rs ${order.total}
+        </div>
+        <div class="barcode">
+          <svg width="100" height="50">
+            <rect width="100" height="50" style="fill:#000;"></rect>
+          </svg>
+          <div>${id}</div>
+        </div>
+        <div class="section">
+          <strong>Status:</strong> ${order.status}
+        </div>
+        <div class="footer">
+          Thank you for your business!
+        </div>
       </div>
-      <div class="details">
-        <p><strong>Customer:</strong> ${order.customer_name}</p>
-        <p><strong>Email:</strong> ${order.customer_email}</p>
-        <p><strong>Address:</strong> ${order.customer_address}, ${order.customer_city}</p>
-        <p><strong>Phone:</strong> ${order.customer_phone}</p>
-      </div>
-      <table>
-        <tr><th>Item</th><th>Quantity</th><th>Price</th></tr>
-        <tr><td>${order.item}</td><td>${order.quantity}</td><td>Rs ${order.total}</td></tr>
-      </table>
-      <p><strong>Status:</strong> ${order.status}</p>
-      <div class="footer">Thank you for shopping with PetioFile!</div>
     </body>
     </html>
   `);
   win.print();
 }
+
 
 
 

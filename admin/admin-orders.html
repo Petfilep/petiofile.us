@@ -214,7 +214,7 @@ function renderOrders(orders) {
       <td><input type="checkbox"></td>
       <td>${order.id}</td>
       <td>${order.customer_name}<br>${order.customer_email}</td>
-      <td>${order.item} x ${order.quantity}</td>
+      <td>${formatItems(order.item)}</td>
       <td>Rs ${order.total}</td>
       <td>
         <button class="contact-info-btn" onclick="showContactInfo('${order.customer_address}', '${order.customer_city}', '${order.customer_phone}')">👁️ Contact</button>
@@ -393,6 +393,24 @@ const API = 'https://api.petiofile.us';
 function showContactInfo(address, city, phone) {
   alert(`Address: ${address}\nCity: ${city}\nPhone: ${phone}`);
 }
+
+
+function formatItems(raw) {
+  let items;
+  try {
+    items = JSON.parse(raw);
+  } catch (e) {
+    return raw; // fallback if not valid JSON
+  }
+
+  return items.map(i => `
+    <div>
+      <strong>${i.title}</strong> 
+      (x${i.qty}) - Rs ${i.price}
+    </div>
+  `).join('');
+}
+
 </script>
 
 

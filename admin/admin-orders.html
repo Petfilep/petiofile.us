@@ -179,27 +179,30 @@ function renderOrders(orders) {
   tbody.innerHTML = '';
   orders.forEach(order => {
     const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><input type="checkbox"></td>
-        <td>${order.id}</td>
-        <td>${order.customer_name}<br>${order.customer_email}</td>
-        <td>Rs ${order.total}</td>
-        <td>${order.item} x ${order.quantity}</td>
-        <td>${order.payment_screenshot ? `<a href="${order.payment_screenshot}" target="_blank">View</a>` : 'Pending'}</td>
-          <td>
-            <select onchange="confirmStatusChange(${order.id}, this.value)">
-              <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-              <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-              <option value="Ready for Pickup" ${order.status === 'Ready for Pickup' ? 'selected' : ''}>Ready for Pickup</option>
-              <option value="Delivery In Progress" ${order.status === 'Delivery In Progress' ? 'selected' : ''}>Delivery In Progress</option>
-              <option value="In Transit" ${order.status === 'In Transit' ? 'selected' : ''}>In Transit</option>
-              <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-              <option value="Failed" ${order.status === 'Failed' ? 'selected' : ''}>Failed</option>
-            </select>
-          </td>
+    tr.innerHTML = `
+      <td><input type="checkbox"></td>
+      <td>${order.id}</td>
+      <td>${order.customer_name}<br>${order.customer_email}</td>
+      <td>${order.item} x ${order.quantity}</td>
+      <td>Rs ${order.total}</td>
+      <td>
+        <button title="Address: ${order.customer_address}, ${order.customer_city}\nPhone: ${order.customer_phone}">👁️</button>
+      </td>
+      <td>${order.payment_screenshot ? `<a href="${order.payment_screenshot}" target="_blank">View</a>` : 'Pending'}</td>
+      <td>
+        <select onchange="confirmStatusChange(${order.id}, this.value)">
+          <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+          <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+          <option value="Ready for Pickup" ${order.status === 'Ready for Pickup' ? 'selected' : ''}>Ready for Pickup</option>
+          <option value="Delivery In Progress" ${order.status === 'Delivery In Progress' ? 'selected' : ''}>Delivery In Progress</option>
+          <option value="In Transit" ${order.status === 'In Transit' ? 'selected' : ''}>In Transit</option>
+          <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+          <option value="Failed" ${order.status === 'Failed' ? 'selected' : ''}>Failed</option>
+        </select>
+      </td>
+      <td><button onclick="printInvoice(${order.id})">📄</button></td>
+    `;
 
-        <td><button onclick="printInvoice(${order.id})">📄</button></td>
-      `;
 
     tbody.appendChild(tr);
   });

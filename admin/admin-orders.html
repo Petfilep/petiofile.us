@@ -273,7 +273,9 @@ function confirmStatusChange(id, status) {
     })
     .then(data => {
       alert('Status updated successfully!');
-      // Optionally reload or re-fetch orders
+        const order = allOrders.find(o => o.id === id);
+        if (order) order.status = status;
+        renderPage(currentPage);
     })
     .catch(err => {
       alert('Failed to update status.');

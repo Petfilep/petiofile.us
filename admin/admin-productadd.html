@@ -73,14 +73,31 @@
           <button class="delete-btn">Delete</button>
         </td>
       `;
-      row.querySelector('.save-btn').addEventListener('click', () => {
+      row.querySelector('.save-btn').addEventListener('click', async () => {
         const imageInput = row.querySelector('.image-input');
         const file = imageInput.files[0];
         let imageUrl = p.image;
 
-        if (file) {
-          imageUrl = URL.createObjectURL(file);
+      if (file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const uploadRes = await fetch('https://api.petiofile.us/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!uploadRes.ok) {
+          alert('Image upload failed.');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save';
+          return;
         }
+
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.path;
+      }
+
 
         const updated = {
           title: row.children[2].querySelector('input').value,
@@ -89,8 +106,10 @@
           image: imageUrl,
           sale: row.children[5].querySelector('select').value === 'true'
         };
+
         const method = p.id ? 'PUT' : 'POST';
         const url = p.id ? `https://api.petiofile.us/api/products/${p.id}` : 'https://api.petiofile.us/api/products';
+
         fetch(url, {
           method: method,
           headers: { 'Content-Type': 'application/json' },
@@ -117,15 +136,22 @@
             })
             .catch(() => alert('Failed to delete product.'));
         }
-      });
+      });     
+      
+       
+
       tbody.appendChild(row);
     }
+
+
+
 
     function addNewProductRow() {
       appendProductRow({ title: '', price: 0, oldPrice: 0, image: '', sale: false }, document.querySelectorAll('#productTableBody tr').length + 1);
     }
 
     document.addEventListener('DOMContentLoaded', loadProducts);
-  </script>
+
+</script>
 </body>
 </html>

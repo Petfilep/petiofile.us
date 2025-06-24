@@ -150,7 +150,7 @@ let currentPage = 1;
 const pageSize = 10;
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetch('/api/admin/orders')
+  fetch(`${API}/api/orders`)
     .then(res => res.json())
     .then(data => {
       allOrders = data;

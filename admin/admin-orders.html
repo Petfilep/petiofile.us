@@ -96,6 +96,37 @@ body {
   padding: 6px 10px;
 }
 
+.contact-info-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+.contact-info-btn:hover {
+  background: #0056b3;
+}
+select {
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+table {
+  border-collapse: separate;
+  border-spacing: 0 4px;
+}
+td {
+  background: #fff;
+  border: 1px solid #ddd;
+}
 
 
 </style>
@@ -186,8 +217,9 @@ function renderOrders(orders) {
       <td>${order.item} x ${order.quantity}</td>
       <td>Rs ${order.total}</td>
       <td>
-        <button title="Address: ${order.customer_address}, ${order.customer_city}\nPhone: ${order.customer_phone}">👁️</button>
+        <button class="contact-info-btn" onclick="showContactInfo('${order.customer_address}', '${order.customer_city}', '${order.customer_phone}')">👁️ Contact</button>
       </td>
+
       <td>${order.payment_screenshot ? `<a href="${order.payment_screenshot}" target="_blank">View</a>` : 'Pending'}</td>
       <td>
         <select onchange="confirmStatusChange(${order.id}, this.value)">
@@ -320,6 +352,10 @@ function handleSearch() {
 }
 const API = 'https://api.petiofile.us';
 
+
+function showContactInfo(address, city, phone) {
+  alert(`Address: ${address}\nCity: ${city}\nPhone: ${phone}`);
+}
 </script>
 
 

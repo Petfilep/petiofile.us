@@ -50,98 +50,111 @@
         });
     }
 
-    function appendProductRow(p, sn) {
-      const tbody = document.getElementById('productTableBody');
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${sn}</td>
-        <td>
-          ${p.image ? `<img class="thumb" src="${p.image}">` : ''}
-          <input type="file" class="image-input">
-        </td>
-        <td><input class="inline-edit" value="${p.title || ''}"></td>
-        <td><input class="inline-edit" type="number" value="${p.price || 0}"></td>
-        <td><input class="inline-edit" type="number" value="${p.oldPrice || 0}"></td>
-        <td>
-          <select class="inline-edit">
-            <option value="true" ${p.sale ? 'selected' : ''}>Yes</option>
-            <option value="false" ${!p.sale ? 'selected' : ''}>No</option>
-          </select>
-        </td>
-        <td>
-          <button class="save-btn">Save</button>
-          <button class="delete-btn">Delete</button>
-        </td>
-      `;
-      row.querySelector('.save-btn').addEventListener('click', async () => {
-        const imageInput = row.querySelector('.image-input');
-        const file = imageInput.files[0];
-        let imageUrl = p.image;
+function appendProductRow(p, sn) {
+  const tbody = document.getElementById('productTableBody');
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${sn}</td>
+    <td>
+      ${p.image ? `<img class="thumb" src="${p.image}">` : ''}
+      <input type="file" class="image-input">
+    </td>
+    <td><input class="inline-edit" value="${p.title || ''}"></td>
+    <td><input class="inline-edit" type="number" value="${p.price || 0}"></td>
+    <td><input class="inline-edit" type="number" value="${p.oldPrice || 0}"></td>
+    <td>
+      <select class="inline-edit">
+        <option value="true" ${p.sale ? 'selected' : ''}>Yes</option>
+        <option value="false" ${!p.sale ? 'selected' : ''}>No</option>
+      </select>
+    </td>
+    <td>
+      <button class="save-btn">Save</button>
+      <button class="delete-btn">Delete</button>
+    </td>
+  `;
+  
+  const saveBtn = row.querySelector('.save-btn');
+  saveBtn.addEventListener('click', async () => {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
 
-      if (file) {
-        const formData = new FormData();
-        formData.append('image', file);
+    const imageInput = row.querySelector('.image-input');
+    const file = imageInput.files[0];
+    let imageUrl = p.image;
 
-        const uploadRes = await fetch('https://api.petiofile.us/api/upload', {
-          method: 'POST',
-          body: formData
-        });
+if (file) {
+  const formData = new FormData();
+  formData.append('image', file);
 
-        if (!uploadRes.ok) {
-          alert('Image upload failed.');
-          saveBtn.disabled = false;
-          saveBtn.textContent = 'Save';
-          return;
-        }
+  const uploadRes = await fetch('https://api.imgur.com/3/image', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Client-ID 11268f9d43fb0b9'
+    },
+    body: formData
+  });
 
-        const uploadData = await uploadRes.json();
-        imageUrl = uploadData.path;
-      }
+  const uploadData = await uploadRes.json();
+  if (!uploadData.success) {
+    alert('Image upload failed.');
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
+    return;
+  }
+  imageUrl = uploadData.data.link; // ✅ Uploaded successfully
+} // ✅ << THIS was missing
 
 
-        const updated = {
-          title: row.children[2].querySelector('input').value,
-          price: parseFloat(row.children[3].querySelector('input').value),
-          oldPrice: parseFloat(row.children[4].querySelector('input').value),
-          image: imageUrl,
-          sale: row.children[5].querySelector('select').value === 'true'
-        };
+    const updated = {
+      title: row.children[2].querySelector('input').value,
+      price: parseFloat(row.children[3].querySelector('input').value),
+      oldPrice: parseFloat(row.children[4].querySelector('input').value),
+      image: imageUrl,
+      sale: row.children[5].querySelector('select').value === 'true'
+    };
 
-        const method = p.id ? 'PUT' : 'POST';
-        const url = p.id ? `https://api.petiofile.us/api/products/${p.id}` : 'https://api.petiofile.us/api/products';
+    const method = p.id ? 'PUT' : 'POST';
+    const url = p.id
+      ? `https://api.petiofile.us/api/products/${p.id}`
+      : 'https://api.petiofile.us/api/products';
 
-        fetch(url, {
-          method: method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updated)
-        })
-        .then(res => res.json())
+    fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated)
+    })
+    .then(() => {
+      alert('Product saved successfully!');
+      loadProducts();
+    })
+    .catch(() => {
+      alert('Failed to save product.');
+    })
+    .finally(() => {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save';
+    });
+  });
+
+  row.querySelector('.delete-btn').addEventListener('click', () => {
+    if (!p.id) {
+      row.remove();
+      return;
+    }
+    if (confirm('Are you sure you want to delete this product?')) {
+      fetch(`https://api.petiofile.us/api/products/${p.id}`, { method: 'DELETE' })
         .then(() => {
-          alert('Product saved successfully!');
+          alert('Product deleted successfully!');
           loadProducts();
         })
-        .catch(() => alert('Failed to save product.'));
-      });
-
-      row.querySelector('.delete-btn').addEventListener('click', () => {
-        if (!p.id) {
-          row.remove();
-          return;
-        }
-        if (confirm('Are you sure you want to delete this product?')) {
-          fetch(`https://api.petiofile.us/api/products/${p.id}`, { method: 'DELETE' })
-            .then(() => {
-              alert('Product deleted successfully!');
-              loadProducts();
-            })
-            .catch(() => alert('Failed to delete product.'));
-        }
-      });     
-      
-       
-
-      tbody.appendChild(row);
+        .catch(() => alert('Failed to delete product.'));
     }
+  });
+
+  tbody.appendChild(row);
+}
+
 
 
 

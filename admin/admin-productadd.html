@@ -97,7 +97,7 @@ const toBase64 = file => new Promise((resolve, reject) => {
 
 const base64Image = await toBase64(file);
 
-const uploadRes = await fetch('https://api.imgur.com/3/image', {
+const uploadRes = await fetch('https://api.petiofile.us/api/upload-to-imgur', {
   method: 'POST',
   headers: {
     Authorization: 'Client-ID 11268f9d43fb0b9',

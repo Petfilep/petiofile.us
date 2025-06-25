@@ -145,10 +145,12 @@ if (file) {
     const deleteBtn = row.querySelector('.delete-btn');
 
     editBtn.addEventListener('click', () => {
-      editBtn.style.display = 'none';
-      saveBtn.style.display = 'inline-block';
-      deleteBtn.style.display = 'inline-block';
+    row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = true);
+    editBtn.style.display = 'inline-block';
+    saveBtn.style.display = 'none';
+    deleteBtn.style.display = 'none';
     });
+
 
   
   row.querySelector('.delete-btn').addEventListener('click', () => {
@@ -167,6 +169,7 @@ if (file) {
   });
 
   tbody.appendChild(row);
+  row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = true);
 }
 
 

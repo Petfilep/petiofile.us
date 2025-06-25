@@ -145,12 +145,13 @@ if (file) {
     const editBtn = row.querySelector('.edit-btn');
     const deleteBtn = row.querySelector('.delete-btn');
 
-    editBtn.addEventListener('click', () => {
-      row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = false);
-      editBtn.style.display = 'none';
-      saveBtn.style.display = 'inline-block';
-      deleteBtn.style.display = 'inline-block';
-    });
+editBtn.addEventListener('click', () => {
+  row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = false);
+  editBtn.style.display = 'none';
+  saveBtn.style.display = 'inline-block';
+  deleteBtn.style.display = 'inline-block';
+  cancelBtn.style.display = 'inline-block';
+});
 
 
 
@@ -185,15 +186,15 @@ if (file) {
     
 
 
-    // Set Cancel Button
-    row.querySelector('.cancel-btn').addEventListener('click', () => {
-      row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = true);
-      editBtn.style.display = 'inline-block';
-      saveBtn.style.display = 'none';
-      deleteBtn.style.display = 'none';
-      row.querySelector('.cancel-btn').style.display = 'none';
-      row.querySelector('.cancel-btn').style.display = 'inline-block';
-    });
+const cancelBtn = row.querySelector('.cancel-btn');
+cancelBtn.addEventListener('click', () => {
+  row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = true);
+  editBtn.style.display = 'inline-block';
+  saveBtn.style.display = 'none';
+  deleteBtn.style.display = 'none';
+  cancelBtn.style.display = 'none';
+});
+
 
 
 }

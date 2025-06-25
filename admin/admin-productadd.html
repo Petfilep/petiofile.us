@@ -68,10 +68,12 @@ function appendProductRow(p, sn) {
         <option value="false" ${!p.sale ? 'selected' : ''}>No</option>
       </select>
     </td>
-    <td>
-      <button class="save-btn">Save</button>
-      <button class="delete-btn">Delete</button>
-    </td>
+      <td>
+        <button class="edit-btn">Edit</button>
+        <button class="save-btn" style="display:none;">Save</button>
+        <button class="delete-btn" style="display:none;">Delete</button>
+      </td>
+
   `;
   
   const saveBtn = row.querySelector('.save-btn');
@@ -102,7 +104,9 @@ if (file) {
     saveBtn.textContent = 'Save';
     return;
   }
-  imageUrl = uploadData.data.link; // ✅ Uploaded successfully
+  imageUrl = uploadData.data.link;
+  row.querySelector('img.thumb').src = imageUrl;
+ 
 } // ✅ << THIS was missing
 
 
@@ -137,6 +141,16 @@ if (file) {
     });
   });
 
+    const editBtn = row.querySelector('.edit-btn');
+    const deleteBtn = row.querySelector('.delete-btn');
+
+    editBtn.addEventListener('click', () => {
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+      deleteBtn.style.display = 'inline-block';
+    });
+
+  
   row.querySelector('.delete-btn').addEventListener('click', () => {
     if (!p.id) {
       row.remove();

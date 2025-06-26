@@ -57,7 +57,7 @@ function appendProductRow(p, sn) {
     <td>${sn}</td>
     <td>
       ${p.image ? `<img class="thumb" src="${p.image}">` : ''}
-      <input type="file" class="image-input">
+      <input type="text" class="inline-edit image-link-input" placeholder="https://i.imgur.com/..." value="${p.image || ''}">
     </td>
     <td><input class="inline-edit" value="${p.title || ''}"></td>
     <td><input class="inline-edit" type="number" value="${p.price || 0}"></td>
@@ -82,45 +82,9 @@ function appendProductRow(p, sn) {
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
 
-    const imageInput = row.querySelector('.image-input');
-    const file = imageInput.files[0];
-    let imageUrl = p.image;
+    const imageUrl = row.querySelector('.image-link-input').value.trim();
+    row.querySelector('img.thumb')?.setAttribute('src', imageUrl);
 
-if (file) {
-  const formData = new FormData();
-const toBase64 = file => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.onload = () => resolve(reader.result.split(',')[1]); // remove "data:image/..;base64,"
-  reader.onerror = reject;
-  reader.readAsDataURL(file);
-});
-
-const base64Image = await toBase64(file);
-
-const uploadRes = await fetch('https://api.imgur.com/3/image', {
-  method: 'POST',
-  headers: {
-    Authorization: 'Client-ID 11268f9d43fb0b9',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    image: base64Image,
-    type: 'base64'
-  })
-});
-
-const uploadData = await uploadRes.json();
-
-if (!uploadData.success) {
-  alert('Image upload to Imgur failed.');
-  saveBtn.disabled = false;
-  saveBtn.textContent = 'Save';
-  return;
-}
-
-imageUrl = uploadData.data.link;
-row.querySelector('img.thumb').src = imageUrl;
-}
 
 
     const updated = {

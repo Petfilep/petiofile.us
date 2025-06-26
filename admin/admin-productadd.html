@@ -79,9 +79,17 @@ function appendProductRow(p, sn) {
   
   const saveBtn = row.querySelector('.save-btn');
 row.querySelector('.save-btn').addEventListener('click', async () => {
-const imageInput = row.querySelector('.image-link-input'); // ✅ correct class
-const imageUrl = imageInput.value.trim();
+let imageUrl = row.querySelector('.image-link-input').value.trim();
 
+// Convert Imgur page link to direct .jpg link if needed
+if (imageUrl.includes('imgur.com/') && !imageUrl.startsWith('https://i.imgur.com/')) {
+  const match = imageUrl.match(/imgur\.com\/([a-zA-Z0-9]+)/);
+  if (match && match[1]) {
+    imageUrl = `https://i.imgur.com/${match[1]}.jpg`;
+  }
+}
+
+// Validation
 if (!imageUrl.startsWith('https://i.imgur.com/')) {
   alert('Please use a valid Imgur image link.');
   return;

@@ -101,7 +101,7 @@ const uploadRes = await fetch('https://api.imgur.com/3/image', {
   method: 'POST',
   headers: {
     Authorization: 'Client-ID 11268f9d43fb0b9',
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   },
   body: JSON.stringify({
     image: base64Image,
@@ -109,18 +109,18 @@ const uploadRes = await fetch('https://api.imgur.com/3/image', {
   })
 });
 
+const uploadData = await uploadRes.json();
 
-  const uploadData = await uploadRes.json();
-  if (!uploadData.success) {
-    alert('Image upload failed.');
-    saveBtn.disabled = false;
-    saveBtn.textContent = 'Save';
-    return;
-  }
-  imageUrl = uploadData.data.link;
-  row.querySelector('img.thumb').src = imageUrl;
- 
-} // ✅ << THIS was missing
+if (!uploadData.success) {
+  alert('Image upload to Imgur failed.');
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Save';
+  return;
+}
+
+imageUrl = uploadData.data.link;
+row.querySelector('img.thumb').src = imageUrl;
+}
 
 
     const updated = {

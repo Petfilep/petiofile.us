@@ -78,51 +78,55 @@ function appendProductRow(p, sn) {
   `;
   
   const saveBtn = row.querySelector('.save-btn');
-  saveBtn.addEventListener('click', async () => {
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving...';
+row.querySelector('.save-btn').addEventListener('click', async () => {
+const imageInput = row.querySelector('.image-link-input'); // ✅ correct class
+const imageUrl = imageInput.value.trim();
 
-    const imageUrl = row.querySelector('.image-link-input').value.trim();
-    row.querySelector('img.thumb')?.setAttribute('src', imageUrl);
+if (!imageUrl.startsWith('https://i.imgur.com/')) {
+  alert('Please use a valid Imgur image link.');
+  return;
+}
 
 
+  const updated = {
+    title: row.children[2].querySelector('input').value,
+    price: parseFloat(row.children[3].querySelector('input').value),
+    oldPrice: parseFloat(row.children[4].querySelector('input').value),
+    image: imageUrl,
+    sale: row.children[5].querySelector('select').value === 'true'
+  };
 
-    const updated = {
-      title: row.children[2].querySelector('input').value,
-      price: parseFloat(row.children[3].querySelector('input').value),
-      oldPrice: parseFloat(row.children[4].querySelector('input').value),
-      image: imageUrl,
-      sale: row.children[5].querySelector('select').value === 'true'
-    };
+  const method = p.id ? 'PUT' : 'POST';
+  const url = p.id 
+    ? `https://api.petiofile.us/api/products/${p.id}` 
+    : `https://api.petiofile.us/api/products`;
 
-    const method = p.id ? 'PUT' : 'POST';
-    const url = p.id
-      ? `https://api.petiofile.us/api/products/${p.id}`
-      : 'https://api.petiofile.us/api/products';
-
-    fetch(url, {
+  try {
+    const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updated)
-    })
-    .then(() => {
-      alert('Product saved successfully!');
-      loadProducts();
-    })
-    .catch(() => {
-      alert('Failed to save product.');
-    })
-    .finally(() => {
-      saveBtn.disabled = false;
-      saveBtn.textContent = 'Save';
     });
-  });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert('✅ Product saved successfully!');
+      loadProducts();
+    } else {
+      throw new Error(data.message || 'Unknown error');
+    }
+  } catch (err) {
+    alert('❌ Failed to save product: ' + err.message);
+  }
+});
+
+
 
     const editBtn = row.querySelector('.edit-btn');
     const deleteBtn = row.querySelector('.delete-btn');
 
 editBtn.addEventListener('click', () => {
-  row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = false);
+  row.querySelectorAll('input, select, .image-link-input').forEach(el => el.disabled = false);
   editBtn.style.display = 'none';
   saveBtn.style.display = 'inline-block';
   deleteBtn.style.display = 'inline-block';
@@ -164,7 +168,7 @@ editBtn.addEventListener('click', () => {
 
 const cancelBtn = row.querySelector('.cancel-btn');
 cancelBtn.addEventListener('click', () => {
-  row.querySelectorAll('input, select, .image-input').forEach(el => el.disabled = true);
+  row.querySelectorAll('input, select, .image-link-input').forEach(el => el.disabled = true);
   editBtn.style.display = 'inline-block';
   saveBtn.style.display = 'none';
   deleteBtn.style.display = 'none';

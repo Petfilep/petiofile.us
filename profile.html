@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetioFile | Account</title>
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <script src="/assets/js/api-config.js"></script>
+  <style>
+    body {
+      background: #f4f6f8;
+      font-family: 'Nunito Sans', sans-serif;
+      margin: 0;
+    }
+    .account-wrapper {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      padding: 40px 20px;
+      gap: 20px;
+    }
+    .sidebar {
+      width: 220px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .sidebar button {
+      width: 100%;
+      padding: 15px;
+      background: none;
+      border: none;
+      text-align: left;
+      font-weight: bold;
+      font-size: 16px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+    .sidebar button.active {
+      background: #eb4d4b;
+      color: white;
+    }
+    .content {
+      flex: 1;
+      background: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .info-line, .order-row {
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .order-table th, .order-table td {
+      border: 1px solid #ddd;
+      padding: 10px 12px;
+      font-size: 14px;
+      text-align: left;
+    }
+    .order-table th {
+      background: #f0f0f0;
+    }
+    .status-pending {
+      color: #f39c12;
+      font-weight: bold;
+    }
+    .view-btn {
+      background: #3498db;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="account-wrapper">
+    <div class="sidebar">
+      <button class="active" onclick="showSection('profile')">Profile</button>
+      <button onclick="showSection('orders')">Recent Orders</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+    <div class="content">
+      <div id="profile-section">
+        <div class="section-title">Account Settings</div>
+        <div id="user-profile">Loading...</div>
+      </div>
+      <div id="orders-section" style="display: none;">
+        <div class="section-title">Recent Orders</div>
+        <div id="orders-list">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('jwt');
+
+    function showSection(section) {
+      document.getElementById('profile-section').style.display = section === 'profile' ? 'block' : 'none';
+      document.getElementById('orders-section').style.display = section === 'orders' ? 'block' : 'none';
+
+      document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
+      if (section === 'profile') document.querySelectorAll('.sidebar button')[0].classList.add('active');
+      if (section === 'orders') document.querySelectorAll('.sidebar button')[1].classList.add('active');
+    }
+
+    function logout() {
+      localStorage.removeItem('jwt');
+      window.location.href = '/login.html';
+    }
+
+    async function loadProfileAndOrders() {
+      if (!token) {
+        document.getElementById('user-profile').innerText = 'Not logged in';
+        document.getElementById('orders-list').innerText = 'Please login to see your orders';
+        return;
+      }
+
+      try {
+        const profileRes = await fetch(`${API}/api/profile`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const user = await profileRes.json();
+
+        document.getElementById('user-profile').innerHTML = `
+          <div class="info-line"><strong>Name:</strong> ${user.username}</div>
+          <div class="info-line"><strong>Email:</strong> ${user.email}</div>
+        `;
+
+        const ordersRes = await fetch(`${API}/api/orders?email=${encodeURIComponent(user.email)}`);
+        const orders = await ordersRes.json();
+
+        if (!orders.length) {
+          document.getElementById('orders-list').innerHTML = '<p>No orders found.</p>';
+          return;
+        }
+
+        let rows = orders.map(o => `
+          <tr>
+            <td>${o.id}</td>
+            <td>$${o.total}</td>
+            <td>${o.payment_mode || 'N/A'}</td>
+            <td class="status-pending">${o.payment_status || 'Pending'}</td>
+            <td class="status-pending">${o.order_status || 'Pending'}</td>
+            <td><button class="view-btn">View</button></td>
+          </tr>
+        `).join('');
+
+        document.getElementById('orders-list').innerHTML = `
+          <table class="order-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Amount</th>
+                <th>Payment Mode</th>
+                <th>Payment Status</th>
+                <th>Order Status</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      } catch (err) {
+        document.getElementById('user-profile').innerText = 'Error loading profile';
+        document.getElementById('orders-list').innerText = 'Error loading orders';
+      }
+    }
+
+    loadProfileAndOrders();
+  </script>
+</body>
+</html>

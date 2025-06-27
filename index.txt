@@ -1,727 +1,255 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout</title>
-  <link rel="stylesheet" href="/assets/css/style.css">
-  <style>
-    body {
-      font-family: 'Nunito Sans', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 60px;
-      gap: 50px;
-      background: #fff9f5;
-    }
-
-    .form-container, .summary {
-      background: #ffffff;
-      padding: 35px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      font-size: 24px;
-      color: #e85a4f;
-    }
-
-    label {
-      font-weight: 600;
-      color: #444;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 15px;
-      background: #fdfdfd;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #f2852c;
-      background: #fffefc;
-    }
-
-    .payment-options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .payment-options label {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: #fff2e6;
-      border: 1px solid #f6c89f;
-      padding: 12px 18px;
-      border-radius: 8px;
-      transition: 0.3s ease;
-      font-size: 16px;
-      color: #333;
-      font-weight: 500;
-    }
-
-    .payment-options label:hover,
-    .payment-options input[type="radio"]:checked + img + span {
-      background: #ffe5cc;
-      cursor: pointer;
-    }
-
-    .payment-options input[type="radio"] {
-      display: none;
-    }
-
-    .payment-option {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      cursor: pointer;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #f6c89f;
-      background: #fff2e6;
-      transition: 0.3s;
-    }
-
-    .payment-option.selected {
-      background: #ffd8b1;
-      border-color: #f2852c;
-      animation: pop-select 0.25s ease-in-out;
-    }
-
-    @keyframes pop-select {
-      0%   { transform: scale(1); }
-      40%  { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-
-    .payment-option img {
-      width: 32px;
-      height: 32px;
-    }
-
-    .complete-btn {
-      background: #ff6600;
-      color: white;
-      font-weight: bold;
-      padding: 15px;
-      border: none;
-      width: 100%;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .complete-btn:hover {
-      background: #d76b18;
-    }
-
-    .summary {
-      font-size: 16px;
-    }
-
-    .summary img {
-      width: 70px;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-right: 12px;
-    }
-
-    .popup {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      display: none;
-      z-index: 1000;
-    }
-
-    .popup-content {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-
-    .popup img {
-      width: 220px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    .popup input[type="file"] {
-      margin-top: 10px;
-      margin-bottom: 20px;
-    }
-
-.coupon-toggle {
-  background: #fefefe;
-  border: 1px solid #d33;
-  color: #d33;
-  font-weight: bold;
-  padding: 12px 16px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.coupon-content {
-  border: 1px solid #ddd;
-  border-top: none;
-  padding: 16px;
-  background: #fff;
-  border-radius: 0 0 8px 8px;
-  margin-bottom: 20px;
-}
-
-.coupon-content input[type="text"] {
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 14px;
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.coupon-content .complete-btn {
-  background: #e85a4f;
-  font-weight: bold;
-  padding: 12px;
-}
-
-
-@media screen and (max-width: 768px) {
-  body {
-    flex-direction: column;
-    padding: 15px;
-  }
-  .form-container, .summary {
-    max-width: 100%;
-    width: 100%;
-    padding: 20px;
-  }
-  .popup-content {
-    width: 95%;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .complete-btn {
-    order: 99;
-    width: 100%;
-    margin-top: 20px;
-  }
-
-  #checkout-form {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.create-account-wrap {
-  margin-top: 15px;
-  padding: 10px;
-  border: 1px solid #f2852c;
-  border-radius: 8px;
-  background: #fffaf5;
-}
-
-.create-account-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  color: #f2852c;
-  font-size: 16px;
-}
-
-.create-account-label input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  accent-color: #f2852c;
-}
-
-
-
-#create-account-wrap input[type="checkbox"] {
-  accent-color: #f2852c;
-}
-
-#account-fields {
-  display: none;
-  margin-top: 10px;
-}
-
-#account-fields input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 8px;
-}
-
-.eye-toggle {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #888;
-}
-
-#qr-pay-amount {
-  color: #e74c3c; /* or #ff6600 for more pop */
-  font-weight: bold;
-}
-
-
-  </style>
-</head>
-<body>
-  <form class="form-container" id="checkout-form">
-    <h2>Contact</h2>
-    <input type="email" placeholder="Email" required>
-
-    
-
-<div class="create-account-wrap">
-<label class="create-account-label">
-  <input type="checkbox" id="toggle-account" style="width: 20px; height: 20px; accent-color: #f2852c;">
-  <span style="margin-left: 8px; color: #f2852c; font-weight: 600;">Create an account?</span>
-</label>
-
-  <div id="account-fields">
-    <div style="position: relative;">
-      <input type="password" placeholder="🔒 Password" id="signup-password" style="padding-right: 40px;">
-      <span class="eye-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
-    </div>
-  </div>
-</div>
-
-
-
-
-    <h2>Choose Payment Method</h2>
-    <div class="payment-options">
-      <label class="payment-option"><input type="radio" name="payment" value="esewa"><img src="/assets/images/payment/esewa.png"><span>eSewa</span></label>
-      <label class="payment-option"><input type="radio" name="payment" value="khalti"><img src="/assets/images/payment/khalti.png"><span>Khalti</span></label>
-      <label class="payment-option"><input type="radio" name="payment" value="imepay"><img src="/assets/images/payment/ime.jpg"><span>IME Pay</span></label>
-    </div>
-
-    <h2>Billing address</h2>
-    <input type="text" placeholder="Full name" required>
-    <input type="text" placeholder="Address" required>
-    <input type="text" placeholder="City" required>
-    <input type="text" pattern="\d{10}" inputmode="numeric" placeholder="Phone" required oninvalid="this.setCustomValidity('Phone number must be exactly 10 digits')" oninput="this.setCustomValidity('')">
-
-
-
-  <div class="mobile-order-btn">
-    <button type="submit" class="complete-btn">Complete order</button>
-  </div>
-
-  </form>
-
-
-    
-
-<div class="summary" id="checkout-summary">
-  <h2>Your Furry Friend’s Order</h2>
-  <div id="checkout-items"></div>
-  <div class="coupon-toggle" onclick="toggleCoupon()">
-    Apply Discount Coupon <span id="coupon-arrow">▼</span>
-  </div>
-  <div class="coupon-content" id="coupon-content" style="display: none; margin-top: 10px;">
-    <input type="text" placeholder="Discount Coupon">
-    <button onclick="applyCoupon()" class="complete-btn" style="background: #e85a4f; margin-top: 10px;">
-      Apply Discount Coupon
-    </button>
-  </div>
-  <hr style="margin: 20px 0;">
-  <div class="summary-pricing" style="margin-top: 20px;">
-    <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span id="summary-subtotal">NPR 0.00</span></div>
-    <div style="display: flex; justify-content: space-between;"><span>Shipping:</span><span>NPR 0.00</span></div>
-  </div>
-  <hr style="margin: 20px 0;">
-  <strong id="summary-total">Total: NPR 0.00</strong>
-</div>
-
-
-  <div class="popup" id="payment-popup" style="display: none;">
-    <div class="popup-content">
-      <h3 id="qr-pay-title">Scan QR to Pay: <span id="qr-pay-amount"></span></h3>
-      <img src="/assets/images/" alt="QR">
-      <input type="file" accept="image/*">
-      <br>
-      <button onclick="closePopup()" class="complete-btn" style="background:#ccc;color:#000;margin-bottom:10px;">
-        Go Back
-      </button>
-      
-      <br>
-      <button onclick="confirmOrder()" class="complete-btn">Confirm & Continue</button>
-    </div>
-  </div>
-
-  <script>
-    const API = 'https://api.petiofile.us';
-
-
-    // ❌ Uncheck all radios on load to prevent default selection
-    document.querySelectorAll('input[name="payment"]').forEach(input => input.checked = false);
-
-
-    const options = document.querySelectorAll(".payment-option input[type=radio]");
-    options.forEach(opt => {
-      opt.addEventListener("change", () => {
-        document.querySelectorAll(".payment-option").forEach(el => el.classList.remove("selected"));
-        opt.closest(".payment-option").classList.add("selected");
-      });
-    });
-
-
-
-async function confirmOrder() {
-  console.log('📝 Cart:', localStorage.getItem('cart'));
-  console.log('📝 JWT:', localStorage.getItem('jwt'));
-
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const totalText = document.getElementById('summary-total').textContent;
-  const totalAmount = totalText.replace('Total: NPR', '').trim();
-  const quantity = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
-
-  await fetch(`${API}/api/order`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('jwt') || ''}`
-    },
-    body: JSON.stringify({
-      customerName: document.querySelector('input[placeholder="Full name"]').value.trim(),
-      customerEmail: document.querySelector('input[type="email"]').value.trim(),
-      customerAddress: document.querySelector('input[placeholder="Address"]').value.trim(),
-      customerCity: document.querySelector('input[placeholder="City"]').value.trim(),
-      customerPhone: document.querySelector('input[placeholder="Phone"]').value.trim(),
-      item: JSON.stringify(cart),
-      quantity: quantity,
-      total: totalAmount
-    })
-
-
-
-
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log('✅ Order saved:', data);
-    window.location.href = "/pages/order-confirmation.html";
-  })
-  .catch(err => {
-    console.error('❌ Order save failed:', err);
-    alert('There was a problem saving your order. Please try again.');
-  });
-}
-
-
-    function toggleCoupon() {
-      const content = document.getElementById('coupon-content');
-      const arrow = document.getElementById('coupon-arrow');
-      const isOpen = content.style.display === 'block';
-      content.style.display = isOpen ? 'none' : 'block';
-      arrow.textContent = isOpen ? '▼' : '▲';
-    }
-
-function applyCoupon() {
-  const couponInput = document.querySelector('#coupon-content input');
-  const applyBtn = document.querySelector('#coupon-content button');
-  const code = couponInput.value.trim().toLowerCase();
-  const subtotalText = document.getElementById('summary-subtotal').textContent;
-  const totalText = document.getElementById('summary-total');
-
-  const subtotal = parseFloat(subtotalText.replace('NPR', '').trim());
-
-  const validCoupons = {
-    "petlove10": 0.10,
-    "meow20": 0.20,
-    "bark5": 0.05
-  };
-
-  const msgContainer = document.getElementById('discount-msg') || document.createElement('div');
-  msgContainer.id = 'discount-msg';
-  msgContainer.style.marginTop = '10px';
-  msgContainer.style.fontSize = '14px';
-
-  const discountRow = document.getElementById('summary-discount') || document.createElement('div');
-  discountRow.id = 'summary-discount';
-  discountRow.style.display = 'flex';
-  discountRow.style.justifyContent = 'space-between';
-  discountRow.style.marginTop = '5px';
-  const pricingBlock = document.querySelector('.summary-pricing');
-
-  if (validCoupons[code]) {
-    const discount = validCoupons[code];
-    const discountAmount = subtotal * discount;
-    const newTotal = subtotal - discountAmount;
-    totalText.textContent = `Total: NPR ${newTotal.toFixed(2)}`;
-
-    totalText.style.transition = 'transform 0.3s ease';
-    totalText.style.transform = 'scale(1.1)';
-    setTimeout(() => totalText.style.transform = 'scale(1)', 300);
-
-    discountRow.innerHTML = `<span>Discount:</span><span>- NPR ${discountAmount.toFixed(2)}</span>`;
-    pricingBlock.insertBefore(discountRow, pricingBlock.children[1]);
-
-    msgContainer.style.color = '#28a745';
-    msgContainer.textContent = `✔️ ${discount * 100}% discount applied!`;
-    totalText.insertAdjacentElement('afterend', msgContainer);
-
-    applyBtn.textContent = '✅ Applied';
-    applyBtn.disabled = true;
-    applyBtn.style.background = '#ccc';
-    applyBtn.style.cursor = 'not-allowed';
-  } else {
-    msgContainer.style.color = '#e74c3c';
-    msgContainer.textContent = '❌ Invalid coupon code.';
-    totalText.insertAdjacentElement('afterend', msgContainer);
-  }
-}
-
-
-
-
-
-
-
-
-// Unified checkout form submission with full validation
-const paymentForm = document.getElementById('checkout-form');
-paymentForm.addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const selected = document.querySelector('input[name=payment]:checked');
-  const popup = document.getElementById('payment-popup');
-  const qrImg = popup.querySelector('img');
-  const emailInput = document.querySelector('input[type="email"]');
-  const phoneInput = document.querySelector('input[placeholder="Phone"]');
-  const fullNameInput = document.querySelector('input[placeholder="Full name"]');
-  const addressInput = document.querySelector('input[placeholder="Address"]');
-  const cityInput = document.querySelector('input[placeholder="City"]');
-  const payMsg = document.getElementById('pay-msg') || document.createElement('div');
-
-  let isValid = true;
-
-  // Reset styles
-  [emailInput, phoneInput, fullNameInput, addressInput, cityInput].forEach(el => el.style.borderColor = '');
-  payMsg.innerText = '';
-
-  // Validate required billing fields
-  if (!fullNameInput.value.trim()) {
-    fullNameInput.style.borderColor = 'red';
-    fullNameInput.placeholder = 'Full name is required';
-    isValid = false;
-  }
-
-  if (!addressInput.value.trim()) {
-    addressInput.style.borderColor = 'red';
-    addressInput.placeholder = 'Address is required';
-    isValid = false;
-  }
-
-  if (!cityInput.value.trim()) {
-    cityInput.style.borderColor = 'red';
-    cityInput.placeholder = 'City is required';
-    isValid = false;
-  }
-
-  // Validate email
-  if (!emailInput.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
-    emailInput.style.borderColor = 'red';
-    emailInput.placeholder = "Enter a valid email";
-    isValid = false;
-  }
-
-  // Validate phone (must be 10 digits)
-  const phoneValue = phoneInput.value.trim();
-  if (!/^\d{10}$/.test(phoneValue)) {
-    phoneInput.style.borderColor = 'red';
-    phoneInput.value = '';
-    phoneInput.placeholder = "Phone number must be 10 digits";
-    isValid = false;
-  }
-
-  // Validate payment selection
-  if (!selected) {
-    payMsg.textContent = '⚠️ Please choose a payment method.';
-    payMsg.style.color = '#e74c3c';
-    payMsg.style.margin = '10px 0';
-    payMsg.style.fontWeight = 'bold';
-    payMsg.id = 'pay-msg';
-    const afterElement = document.querySelector('.payment-options');
-    if (!document.getElementById('pay-msg')) {
-      afterElement.insertAdjacentElement('afterend', payMsg);
-    }
-    isValid = false;
-  }
-
-  const createAccountChecked = document.getElementById('toggle-account').checked;
-  const pwdInput = document.getElementById('signup-password');
-
-if (createAccountChecked) {
-  if (!pwdInput.value.trim()) {
-    pwdInput.style.borderColor = 'red';
-    pwdInput.placeholder = 'Password required';
-    const pwdMsg = document.getElementById('pwd-msg') || document.createElement('div');
-    pwdMsg.id = 'pwd-msg';
-    pwdMsg.style.color = '#e74c3c';
-    pwdMsg.style.fontSize = '14px';
-    pwdMsg.style.marginTop = '4px';
-    pwdMsg.textContent = '⚠️ Please enter a password to create your account.';
-    pwdInput.insertAdjacentElement('afterend', pwdMsg);
-    isValid = false;
-  } else {
-    pwdInput.style.borderColor = '';
-    pwdInput.placeholder = '🔒 Password';
-    const existingMsg = document.getElementById('pwd-msg');
-    if (existingMsg) existingMsg.remove();
-  }
-}
-
-
-
-  if (!isValid) return;
-
-
-  if (createAccountChecked) {
-    await fetch(`${API}/api/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: fullNameInput.value.trim(),
-        email: emailInput.value.trim(),
-        password: pwdInput.value.trim()
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      localStorage.setItem('jwt', data.token);
-      localStorage.setItem('userId', data.user.id);
-    })
-    .catch(err => console.error('Signup during checkout failed', err));
-  }
-
-
-
-  const method = selected.value;
-  const qrMap = {
-    esewa: "/assets/images/payment/esewapet.png",
-    khalti: "/assets/images/payment/khaltipet.png",
-    imepay: "/assets/images/payment/imepet.png"
-  };
-
-  qrImg.src = qrMap[method] || "/assets/images/payment-qr.png";
-  popup.style.display = 'flex';
-  const totalText = document.getElementById('summary-total').textContent;
-  const totalAmount = totalText.replace('Total: NPR', '').trim();
-  document.getElementById('qr-pay-amount').textContent = `NPR ${totalAmount}`;
-
-
-  // Style popup
-  const popupContent = popup.querySelector('.popup-content');
-  popupContent.style.borderRadius = '16px';
-  popupContent.style.padding = '30px 40px';
-  popupContent.style.display = 'flex';
-  popupContent.style.flexDirection = 'column';
-  popupContent.style.alignItems = 'center';
-
-  qrImg.style.border = 'none';
-  qrImg.style.borderRadius = '12px';
-  qrImg.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const mysql = require('mysql2/promise');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+
+const pool = mysql.createPool({
+  host: 'us.mysql.db.bot-hosting.net',
+  user: 'u414905_zyct3MrOr2',
+  password: '@YJ3JG0ApAJFRE2BBDg6Jy=Y',
+  database: 's414905_petiofile'
 });
 
-// Require file upload before confirming order
-
-
-
-
-   
-
-
-    function renderCheckoutItems() {
-      const cart = (JSON.parse(localStorage.getItem('cart')) || []).map(item => ({
-        ...item,
-        qty: parseInt(item.qty || 1),
-        price: parseFloat(item.price)
-      }));
-
-      const container = document.getElementById('checkout-items');
-      const subtotalSpan = document.getElementById('summary-subtotal');
-      const totalSpan = document.getElementById('summary-total');
-      let total = 0;
-
-      container.innerHTML = '';
-      cart.forEach(item => {
-        const itemTotal = item.price * item.qty;
-        total += itemTotal;
-        const div = document.createElement('div');
-        div.style.display = 'flex';
-        div.style.alignItems = 'center';
-        div.style.marginBottom = '15px';
-        div.innerHTML = `
-          <img src="${item.image.startsWith('./') ? item.image.replace('./', '/') : item.image}" style="width:70px;height:70px;border-radius:8px;margin-right:12px;" alt="${item.title}">
-          <div>
-            <strong>${item.title}</strong><br>
-            NPR ${item.price.toFixed(2)} × ${item.qty}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-
-      subtotalSpan.textContent = `NPR ${total.toFixed(2)}`;
-      totalSpan.textContent = `Total: NPR ${total.toFixed(2)}`;
-    }
-
-    document.addEventListener('DOMContentLoaded', renderCheckoutItems);
-
-
-    function closePopup() {
-      document.getElementById('payment-popup').style.display = 'none';
-    }
-    
-  document.addEventListener('DOMContentLoaded', () => {
-    const toggleBox = document.getElementById('toggle-account');
-    const accountFields = document.getElementById('account-fields');
-
-    toggleBox.addEventListener('change', () => {
-      accountFields.style.display = toggleBox.checked ? 'block' : 'none';
-    });
-  });
-
-  function togglePassword() {
-    const pwd = document.getElementById('signup-password');
-    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/payment_screenshots');
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
   }
-  </script>
-</body>
-</html>
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 },  // 10 MB max
+});
+
+const app = express();
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+app.use(cors({
+  origin: process.env.FRONTEND_ORIGIN,
+  credentials: true
+}));
+
+const db = mysql.createPool({
+  host: process.env.DATABASE_HOST,
+  port: process.env.DATABASE_PORT,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASS,
+  database: process.env.DATABASE_NAME
+});
+
+(async () => {
+  await db.query(`CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    reset_token VARCHAR(255)
+    )`);
+  await db.query(`CREATE TABLE IF NOT EXISTS carts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    customer_name VARCHAR(255),
+    customer_email VARCHAR(255),
+    customer_address VARCHAR(255),
+    customer_city VARCHAR(255),
+    customer_phone VARCHAR(20),
+    item TEXT,
+    quantity INT,
+    total VARCHAR(255)
+  )`);
+
+
+})();
+
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.status(401).json({ message: 'No token provided' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Invalid token' });
+    req.user = user;
+    next();
+  });
+}
+
+app.use(express.static(__dirname)); 
+
+
+app.post("/api/signup", async (req, res) => {
+  const { username, email, password } = req.body;
+  const hashed = bcrypt.hashSync(password, 10);
+  try {
+    await db.query("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", [username, email, hashed]);
+    res.status(201).json({ message: "User registered" });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Email already exists" });
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+  const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+  const user = rows[0];
+  if (user && bcrypt.compareSync(password, user.password)) {
+    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "2h" });
+    res.json({ token });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+
+app.post('/api/upload-to-imgur', upload.single('image'), async (req, res) => {
+  try {
+    const imageBuffer = req.file.buffer.toString('base64');
+
+    const response = await axios.post('https://api.imgur.com/3/image', {
+      image: imageBuffer,
+      type: 'base64'
+    }, {
+      headers: {
+        Authorization: 'Client-ID 11268f9d43fb0b9'
+      }
+    });
+
+    res.json({ link: response.data.data.link });
+  } catch (err) {
+    console.error('Imgur upload error:', err.message);
+    res.status(500).json({ error: 'Failed to upload to Imgur' });
+  }
+});
+
+app.post('/api/order', upload.single('paymentScreenshot'), async (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  let userId = null;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      userId = decoded.id;
+    } catch {
+      // guest order
+    }
+  }
+
+  const {
+    customerName, customerEmail, customerAddress,
+    customerCity, customerPhone, item, quantity, total
+  } = req.body;
+
+  const paymentScreenshot = req.file ? `/uploads/payment_screenshots/${req.file.filename}` : null;
+
+  await db.query(
+    'INSERT INTO carts (user_id, customer_name, customer_email, customer_address, customer_city, customer_phone, item, quantity, total, payment_screenshot) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [userId, customerName, customerEmail, customerAddress, customerCity, customerPhone, item, quantity, total, paymentScreenshot]
+  );
+
+  res.json({ message: 'Order saved successfully' });
+});
+
+
+app.get('/api/orders', async (req, res) => {
+  try {
+    const [results] = await pool.query('SELECT * FROM carts');
+    res.json(results);
+  } catch (err) {
+    console.error('Query error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.put('/api/orders/:id/status', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const [result] = await pool.query('UPDATE carts SET status = ? WHERE id = ?', [status, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.json({ message: 'Status updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update status' });
+  }
+});
+
+
+app.get("/api/profile", async (req, res) => {
+  const auth = req.headers.authorization;
+  if (!auth) return res.status(401).json({ message: "No token" });
+  try {
+    const token = auth.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const [rows] = await db.query("SELECT username, email FROM users WHERE id = ?", [decoded.id]);
+    res.json(rows[0]);
+  } catch {
+    res.status(403).json({ message: "Invalid token" });
+  }
+});
+
+app.post("/api/cart/add", async (req, res) => {
+  const { token, item, quantity } = req.body;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    await db.query("INSERT INTO carts (user_id, item, quantity) VALUES (?, ?, ?)", [decoded.id, item, quantity]);
+    res.json({ message: "Item added" });
+  } catch {
+    res.status(403).json({ message: "Invalid token" });
+  }
+});
+
+app.get("/api/cart", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const [rows] = await db.query("SELECT item, quantity FROM carts WHERE user_id = ?", [decoded.id]);
+    res.json(rows);
+  } catch {
+    res.status(403).json({ message: "Invalid token" });
+  }
+});
+
+app.post("/api/logout", (req, res) => {
+  res.status(200).json({ message: "Logout handled client-side" });
+});
+
+app.get('/api/products', (req, res) => {
+  const filePath = path.join(__dirname, 'data', 'products.json');
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading products.json:', err);
+      return res.status(500).json({ error: 'Failed to load products' });
+    }
+    try {
+      const products = JSON.parse(data);
+      res.json(products);
+    } catch (parseErr) {
+      console.error('Error parsing products.json:', parseErr);
+      res.status(500).json({ error: 'Invalid product data' });
+    }
+  });
+});
+
+
+app.get("/", (req, res) => {
+  res.json({ message: "Petio API is live with MySQL!" });
+});
+
+const PORT = process.env.PORT || 21136;
+app.listen(PORT, () => console.log(`✅ PetioFile backend running on port ${PORT}`));
+

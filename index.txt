@@ -228,6 +228,71 @@ app.post("/api/logout", (req, res) => {
   res.status(200).json({ message: "Logout handled client-side" });
 });
 
+app.post('/api/products', (req, res) => {
+  const filePath = path.join(__dirname, 'data', 'products.json');
+  const { title, price, oldPrice, image, sale } = req.body;
+
+  if (!title || !price || !image) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading products.json:', err);
+      return res.status(500).json({ error: 'Failed to read products' });
+    }
+
+    let products = [];
+    try {
+      products = JSON.parse(data);
+    } catch (parseErr) {
+      console.error('Error parsing products.json:', parseErr);
+      return res.status(500).json({ error: 'Invalid product data' });
+    }
+
+    const newProduct = {
+      id: products.length ? products[products.length - 1].id + 1 : 1,
+      title,
+      price,
+      oldPrice,
+      image,
+      sale
+    };
+
+    products.push(newProduct);
+
+    fs.writeFile(filePath, JSON.stringify(products, null, 2), err => {
+      if (err) {
+        console.error('Error writing to products.json:', err);
+        return res.status(500).json({ error: 'Failed to save product' });
+      }
+      res.json({ success: true, product: newProduct });
+    });
+  });
+});
+
+app.put('/api/products/:id', (req, res) => {
+  const filePath = path.join(__dirname, 'data', 'products.json');
+  const { id } = req.params;
+  const { title, price, oldPrice, image, sale } = req.body;
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read products' });
+
+    let products = JSON.parse(data);
+    const index = products.findIndex(p => p.id == id);
+    if (index === -1) return res.status(404).json({ error: 'Product not found' });
+
+    products[index] = { ...products[index], title, price, oldPrice, image, sale };
+
+    fs.writeFile(filePath, JSON.stringify(products, null, 2), err => {
+      if (err) return res.status(500).json({ error: 'Failed to update product' });
+      res.json({ success: true, product: products[index] });
+    });
+  });
+});
+
+
 app.get('/api/products', (req, res) => {
   const filePath = path.join(__dirname, 'data', 'products.json');
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -245,6 +310,33 @@ app.get('/api/products', (req, res) => {
   });
 });
 
+app.delete('/api/products/:id', (req, res) => {
+  const filePath = path.join(__dirname, 'data', 'products.json');
+  const productId = parseInt(req.params.id);
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading products.json:', err);
+      return res.status(500).json({ error: 'Failed to read product file' });
+    }
+
+    let products = JSON.parse(data);
+    const newProducts = products.filter(p => p.id !== productId);
+
+    if (newProducts.length === products.length) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    fs.writeFile(filePath, JSON.stringify(newProducts, null, 2), (err) => {
+      if (err) {
+        console.error('Error writing products.json:', err);
+        return res.status(500).json({ error: 'Failed to delete product' });
+      }
+
+      res.json({ success: true });
+    });
+  });
+});
 
 app.get("/", (req, res) => {
   res.json({ message: "Petio API is live with MySQL!" });
